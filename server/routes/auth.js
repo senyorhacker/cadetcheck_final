@@ -7,37 +7,33 @@ const { SECRET_KEY } = require('../middleware/auth');
 
 // Register
 router.post('/register', async (req, res) => {
-    const { full_name, email, password, community_code } = req.body;
+    const { full_name, email, password } = req.body;
 
     // Basic validation
-    if (!full_name || !email || !password || !community_code) {
+    if (!full_name || !email || !password) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
+    // Password Validation
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[.!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+            message: "Password must be at least 8 characters long, contain at least one uppercase letter and one special character."
+        });
+    }
+
     try {
-        // 1. Check Community Code
-        const codeRes = await db.query('SELECT * FROM codes WHERE code = $1', [community_code]);
-
-        if (codeRes.rows.length === 0) {
-            return res.status(400).json({ message: "Invalid Community Code" });
-        }
-
-        const code = codeRes.rows[0];
-        if (code.is_used) {
-            return res.status(400).json({ message: "This code has already been used!" });
-        }
-
-        // 2. Check if user exists
+        // 1. Check if user exists
         const userCheck = await db.query('SELECT * FROM users WHERE email = $1', [email]);
         if (userCheck.rows.length > 0) {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        // 3. Hash Password
+        // 2. Hash Password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // 4. Create User
+        // 3. Create User
         // Note: 'role' defaults to 'user' in DB schema, but we can be explicit
         const newUserRes = await db.query(
             "INSERT INTO users (full_name, email, password, role, created_at) VALUES ($1, $2, $3, 'user', NOW()) RETURNING id, full_name, email, role",
@@ -45,10 +41,7 @@ router.post('/register', async (req, res) => {
         );
         const newUser = newUserRes.rows[0];
 
-        // 5. Mark Code as Used (Critical Requirement)
-        await db.query('UPDATE codes SET is_used = TRUE, used_by = $1 WHERE id = $2', [newUser.id, code.id]);
-
-        // 6. Generate Token
+        // 4. Generate Token
         const token = jwt.sign(
             { id: newUser.id, email: newUser.email, role: newUser.role },
             SECRET_KEY,

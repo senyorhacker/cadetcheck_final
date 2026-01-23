@@ -350,6 +350,12 @@ async function handleRegister(e) {
     const email = document.getElementById('signupEmail')?.value;
     const password = document.getElementById('signupPass')?.value;
 
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[.!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+        alert("Password must be at least 8 characters long, contain at least one uppercase letter and one special character.");
+        return;
+    }
+
     try {
         const res = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',

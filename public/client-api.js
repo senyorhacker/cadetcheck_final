@@ -26,10 +26,9 @@ const ClientAPI = {
         } catch (err) {
             console.error('Network error saving score:', err);
         }
-    }
-},
+    },
 
-    getUserStats: async function() {
+    getUserStats: async function () {
         const token = localStorage.getItem('token');
         if (!token) return null;
 
@@ -48,40 +47,40 @@ const ClientAPI = {
         }
     },
 
-getUserProfile: async function() {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    try {
-        const res = await fetch(`${this.API_URL}/auth/me`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.ok) return await res.json();
-        return null;
-    } catch (err) {
-        console.error('Error fetching profile:', err);
-        return null;
+    getUserProfile: async function () {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+        try {
+            const res = await fetch(`${this.API_URL}/auth/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) return await res.json();
+            return null;
+        } catch (err) {
+            console.error('Error fetching profile:', err);
+            return null;
+        }
+    },
+
+    updateProfile: async function (data) {
+        const token = localStorage.getItem('token');
+        if (!token) return { success: false, message: "Not logged in" };
+
+        try {
+            const res = await fetch(`${this.API_URL}/auth/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+            if (res.ok) return { success: true, ...result };
+            return { success: false, ...result };
+        } catch (err) {
+            return { success: false, message: err.message };
+        }
     }
-},
-
-updateProfile: async function(data) {
-    const token = localStorage.getItem('token');
-    if (!token) return { success: false, message: "Not logged in" };
-
-    try {
-        const res = await fetch(`${this.API_URL}/auth/update`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(data)
-        });
-
-        const result = await res.json();
-        if (res.ok) return { success: true, ...result };
-        return { success: false, ...result };
-    } catch (err) {
-        return { success: false, message: err.message };
-    }
-}
 };

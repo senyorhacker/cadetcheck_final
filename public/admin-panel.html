@@ -318,6 +318,14 @@
                 </svg>
                 Users
             </a>
+            <a href="admin-codes.html" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                    </path>
+                </svg>
+                Codes
+            </a>
 
         </nav>
         <div style="position: absolute; bottom: 2rem; width: calc(100% - 3rem);">
@@ -412,7 +420,7 @@
             window.location.href = 'login.html';
         }
 
-        document.getElementById('adminName').textContent = user.full_name || 'Admin';
+        document.getElementById('adminName').textContent = user.full_name || 'Bayram Kaptan';
 
         async function handleManualAdd(e) {
             e.preventDefault();

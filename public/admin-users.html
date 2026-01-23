@@ -207,7 +207,7 @@
     <div class="main-content">
         <div class="header">
             <h1 class="page-title">User Management</h1>
-            <input type="text" placeholder="Search users..."
+            <input type="text" id="searchInput" placeholder="Search users..."
                 style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border); width: 300px;">
         </div>
 
@@ -238,26 +238,45 @@
             window.location.href = 'login.html';
         }
 
+        let allUsers = [];
+
         async function fetchUsers() {
             try {
                 const res = await fetch(`${API_URL}/admin/users`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const users = await res.json();
-
-                const tbody = document.getElementById('usersTableBody');
-                tbody.innerHTML = users.map(u => `
-                    <tr>
-                        <td>#${u.id}</td>
-                        <td>${u.full_name}</td>
-                        <td>${u.email}</td>
-                        <td><span class="role-badge role-${u.role}">${u.role}</span></td>
-                        <td>${new Date(u.created_at).toLocaleDateString()}</td>
-                        <td>
-                            <button onclick="deleteUser(${u.id})" class="action-btn">Delete</button>
-                        </td>
-                    </tr>
-                `).join('');
+                allUsers = await res.json();
+                renderUsers(allUsers);
             } catch (e) { console.error(e); }
         }
+
+        function renderUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-muted);">No users found</td></tr>';
+                return;
+            }
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td>#${u.id}</td>
+                    <td>${u.full_name}</td>
+                    <td>${u.email}</td>
+                    <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+                    <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button onclick="deleteUser(${u.id})" class="action-btn">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allUsers.filter(u =>
+                (u.full_name && u.full_name.toLowerCase().includes(term)) ||
+                (u.email && u.email.toLowerCase().includes(term)) ||
+                (u.id && u.id.toString().includes(term))
+            );
+            renderUsers(filtered);
+        });
 
         async function deleteUser(id) {
             if (!confirm('Are you sure you want to delete this user?')) return;

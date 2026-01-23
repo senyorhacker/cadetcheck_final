@@ -19,6 +19,18 @@ router.get('/users', async (req, res) => {
     }
 });
 
+// Delete user
+router.delete('/users/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db.query('DELETE FROM users WHERE id = $1', [id]);
+        res.json({ message: "User deleted" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Delete failed" });
+    }
+});
+
 // Generate Access Code
 router.post('/codes', async (req, res) => {
     const { batchSize } = req.body; // e.g., 50
