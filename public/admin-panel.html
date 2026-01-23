@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CadetCheck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Allerta+Stencil&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1E40AF;
+            --secondary: #64748B;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #0f172a;
+            color: white;
+            padding: 1.5rem;
+            position: fixed;
+            height: 100%;
+            left: 0;
+            top: 0;
+        }
+
+        .brand {
+            font-family: 'Allerta Stencil', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 2.5rem;
+            color: #38bdf8;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #1e293b;
+            color: white;
+        }
+
+        .nav-item svg {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-trend {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up {
+            color: var(--success);
+        }
+
+        /* Content Sections */
+        .section-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Forms */
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .form-control {
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: #fff;
+            color: var(--text-main);
+            width: 100%;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            color: var(--text-main);
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+            cursor: pointer;
+        }
+
+        .role-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-admin {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .role-user {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background: white;
+            width: 600px;
+            max-width: 90%;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .close-modal {
+            float: right;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">CADETCHECK</div>
+        <nav>
+            <a href="admin-panel.html" class="nav-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                Dashboard
+            </a>
+            <a href="admin-users.html" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Users
+            </a>
+
+        </nav>
+        <div style="position: absolute; bottom: 2rem; width: calc(100% - 3rem);">
+            <button onclick="logout()" class="btn btn-outline"
+                style="width: 100%; border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7);">Logout</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title">Overview</h1>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <span id="adminName" style="font-weight: 500;">Admin</span>
+                <div
+                    style="width: 35px; height: 35px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                    A</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value" id="totalUsers">-</div>
+                <div class="stat-trend trend-up">↑ 12% vs last week</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Games Played</div>
+                <div class="stat-value" id="totalGames">0</div> <!-- Future feature -->
+            </div>
+        </div>
+
+
+
+        <div class="section-card">
+            <div class="card-header">
+                <div class="card-title">Recent Users</div>
+                <button onclick="document.getElementById('manualAddSection').style.display='block'"
+                    class="btn btn-outline">+ Manual Add</button>
+            </div>
+
+            <!-- Hidden Manual Add Form -->
+            <div id="manualAddSection"
+                style="display: none; background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <form onsubmit="handleManualAdd(event)" style="display: flex; gap: 1rem;">
+                    <input type="text" id="newMetricName" class="form-control" placeholder="Name" required>
+                    <input type="email" id="newMetricEmail" class="form-control" placeholder="Email" required>
+                    <input type="password" id="newMetricPass" class="form-control" placeholder="Pass" required>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Joined</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- User Detail Modal -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal-card">
+            <span class="close-modal" onclick="closeUserModal()">&times;</span>
+            <h2 id="modalUserName" style="margin-bottom: 0.5rem; font-size: 1.5rem;">User Name</h2>
+            <p id="modalUserEmail" style="color: var(--text-muted); margin-bottom: 2rem;">email@example.com</p>
+
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Recent Activity</h3>
+            <div id="modalHistory">
+                <p style="color: var(--text-muted); font-style: italic;">No game data available yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        // Initial Auth Check
+        if (!token || user.role !== 'admin') {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('adminName').textContent = user.full_name || 'Admin';
+
+        async function handleManualAdd(e) {
+            e.preventDefault();
+            const full_name = document.getElementById('newMetricName').value;
+            const email = document.getElementById('newMetricEmail').value;
+            const password = document.getElementById('newMetricPass').value;
+
+            try {
+                const res = await fetch(`${API_URL}/admin/users`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ full_name, email, password, role: 'user' })
+                });
+
+                if (res.ok) {
+                    alert('User created successfully');
+                    document.getElementById('manualAddSection').style.display = 'none';
+                    e.target.reset();
+                    fetchUsers(); // Refresh list
+                } else {
+                    const data = await res.json();
+                    alert(data.message || 'Error creating user');
+                }
+            } catch (err) {
+                alert('Server connection failed');
+            }
+        }
+
+        // --- Fetch Data ---
+        async function fetchStats() {
+            try {
+                const res = await fetch(`${API_URL}/admin/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                document.getElementById('totalUsers').textContent = data.totalUsers;
+            } catch (e) { console.warn("Backend unavailable"); }
+        }
+
+        async function fetchUsers() {
+            try {
+                const res = await fetch(`${API_URL}/admin/users`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const users = await res.json();
+                const tbody = document.getElementById('usersTableBody');
+
+                tbody.innerHTML = users.map(u => `
+                    <tr onclick="showUserDetail(${u.id}, '${u.full_name}', '${u.email}')">
+                        <td>
+                            <div style="font-weight: 500;">${u.full_name}</div>
+                        </td>
+                        <td style="color: var(--text-muted);">${u.email}</td>
+                        <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+                        <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                        <td><span style="width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block;"></span> Active</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                // Mock data for UI preview
+                document.getElementById('usersTableBody').innerHTML = `
+                    <tr onclick="showUserDetail(1, 'Can Kaptan', 'can@test.com')">
+                        <td><div style="font-weight: 500;">Can Kaptan</div></td>
+                        <td>pilot@test.com</td>
+                        <td><span class="role-badge role-user">user</span></td>
+                        <td>23.12.2024</td>
+                        <td><span style="width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block;"></span> Active</td>
+                    </tr>
+                `;
+            }
+        }
+
+
+
+        // --- Modal Logic ---
+        async function showUserDetail(id, name, email) {
+            const modal = document.getElementById('userModal');
+            document.getElementById('modalUserName').textContent = name;
+            document.getElementById('modalUserEmail').textContent = email;
+
+            // Try fetch results
+            const historyDiv = document.getElementById('modalHistory');
+            historyDiv.innerHTML = '<p>Loading...</p>';
+
+            try {
+                const res = await fetch(`${API_URL}/admin/users/${id}/results`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (res.ok) {
+                    const results = await res.json();
+                    if (results.length > 0) {
+                        historyDiv.innerHTML = '<table style="margin-top: 1rem;"><thead><tr><th>Game</th><th>Score</th><th>Date</th></tr></thead><tbody>' +
+                            results.map(r => `<tr><td>${r.game_name}</td><td>${r.score}</td><td>${new Date(r.played_at).toLocaleDateString()}</td></tr>`).join('') +
+                            '</tbody></table>';
+                    } else {
+                        historyDiv.innerHTML = '<p style="color: var(--text-muted);">No games played yet by this user.</p>';
+                    }
+                } else {
+                    historyDiv.innerHTML = '<p style="color: var(--text-muted);">Could not load history (Backend error).</p>';
+                }
+            } catch (e) {
+                historyDiv.innerHTML = '<p style="color: var(--text-muted);">Could not load history (Network error).</p>';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Init
+        fetchStats();
+        fetchUsers();
+
+        // Close modal on outside click
+        window.onclick = function (event) {
+            const modal = document.getElementById('userModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilot Dashboard - CadetCheck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Work+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+    <canvas id="stars-canvas"></canvas>
+
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <a href="index.html" style="text-decoration: none;">
+                    <h1 style="font-family: 'DM Serif Display', serif; color: var(--white); font-size: 2rem;">
+                        CadetCheck
+                    </h1>
+                </a>
+            </div>
+
+            <div style="position: relative;">
+                <div class="user-profile-trigger">
+                    <div class="profile-avatar">CK</div>
+                    <div style="font-weight: 500;">Can Kaptan</div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </div>
+
+                <div id="profileDropdown"
+                    style="position: absolute; top: 120%; right: 0; background: var(--dark-card); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 12px; padding: 0.5rem; display: none; flex-direction: column; min-width: 180px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                    <a href="profile.html"
+                        style="color: var(--light); text-decoration: none; padding: 0.8rem; display: flex; align-items: center; gap: 0.5rem; border-radius: 8px; transition: background 0.2s;">
+                        <span>👤</span> Edit Profile
+                    </a>
+                    <a href="index.html"
+                        style="color: var(--accent-red); text-decoration: none; padding: 0.8rem; display: flex; align-items: center; gap: 0.5rem; border-radius: 8px; transition: background 0.2s;">
+                        <span>🚪</span> Logout
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card blue">
+                <div class="stat-icon blue">📊</div>
+                <div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted);">Total Tests</div>
+                    <div style="font-size: 1.8rem; font-weight: 700;">47</div>
+                </div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon green">⚡</div>
+                <div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted);">Avg Reaction</div>
+                    <div style="font-size: 1.8rem; font-weight: 700;">320ms</div>
+                </div>
+            </div>
+            <div class="stat-card gold">
+                <div class="stat-icon gold">🏆</div>
+                <div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted);">Highest Score</div>
+                    <div style="font-size: 1.8rem; font-weight: 700;">98%</div>
+                </div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-icon purple">🔥</div>
+                <div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted);">Streak</div>
+                    <div style="font-size: 1.8rem; font-weight: 700;">5 Days</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts & Activity -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Performance Trend</h3>
+                    <select
+                        style="background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: var(--light); padding: 0.4rem; border-radius: 8px; outline: none;">
+                        <option>Last 7 Days</option>
+                        <option>Last 30 Days</option>
+                    </select>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Recent Activity</h3>
+                </div>
+                <div class="activity-list" id="activityList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Games Grid -->
+        <h2 style="font-family: 'DM Serif Display', serif; font-size: 2rem; margin-bottom: 2rem;">PACE Tests</h2>
+        <div class="games-grid">
+            <a href="physics-quiz.html" class="game-card physics">
+                <div class="game-icon">⚛️</div>
+                <h3>Physics Quiz</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Motion, Forces, Energy &
+                    Waves</p>
+                <div class="game-stat">
+                    <span>Last: 88%</span>
+                    <span style="color: var(--accent-gold);">Top Pick</span>
+                </div>
+            </a>
+
+            <a href="level-select.html?game=sustained-attention" class="game-card attention">
+                <div class="game-icon">🎯</div>
+                <h3>Sustained Attention</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Focus and reaction test</p>
+                <div class="game-stat">
+                    <span>Rank: Top 10%</span>
+                    <span>Level 5</span>
+                </div>
+            </a>
+
+            <a href="level-select-memory.html?game=verbal-memory" class="game-card memory">
+                <div class="game-icon">🔢</div>
+                <h3>Verbal Memory</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Process numerical info</p>
+                <div class="game-stat">
+                    <span>Rank: Top 15%</span>
+                    <span>Level 7</span>
+                </div>
+            </a>
+
+            <a href="level-select-corridor.html?game=corridor-memory" class="game-card corridor">
+                <div class="game-icon">🏟️</div>
+                <h3>Visual-Audio Memory</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Spatial navigation test</p>
+                <div class="game-stat">
+                    <span>Rank: Top 20%</span>
+                    <span>Level 4</span>
+                </div>
+            </a>
+
+            <a href="level-select-cognition.html?game=cognition-flexibility" class="game-card cognition">
+                <div class="game-icon">🧠</div>
+                <h3>Cognitive Flexibility</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Adapt to rule changes</p>
+                <div class="game-stat">
+                    <span>Rank: Top 5%</span>
+                    <span>Level 6</span>
+                </div>
+            </a>
+
+            <a href="interview.html" class="game-card interview">
+                <div class="game-icon">🎙️</div>
+                <h3>Interview Prep</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Mülakat Simülasyonu & Soru
+                    Bankası</p>
+                <div class="game-stat">
+                    <span>New Module</span>
+                    <span style="color: var(--accent-gold);">Premium</span>
+                </div>
+            </a>
+
+            <a href="math-quiz.html" class="game-card math">
+                <div class="game-icon">🧮</div>
+                <h3>Mathematics</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Age, Speed, Work Problems
+                </p>
+                <div class="game-stat">
+                    <span>Practice</span>
+                    <span>Level 1</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Feedback Floating Button -->
+    <button id="feedbackBtn" class="feedback-float-btn">
+        <span class="feedback-icon">💬</span>
+        <span class="feedback-text">Feedback</span>
+    </button>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="feedback-modal hidden">
+        <div class="feedback-content">
+            <div class="feedback-header">
+                <h3>Give Feedback</h3>
+                <button id="closeFeedback" class="close-btn">&times;</button>
+            </div>
+
+            <form id="feedbackForm">
+                <!-- 1. Test Selection -->
+                <div class="form-group">
+                    <label class="form-label">Select Test/Module</label>
+                    <select id="feedbackTest" class="form-input" required>
+                        <option value="" disabled selected>Choose a test...</option>
+                        <option value="General Platform">General Platform</option>
+                        <option value="Sustained Attention">Sustained Attention</option>
+                        <option value="Verbal Memory">Verbal Memory</option>
+                        <option value="Visual-Audio Memory">Visual-Audio Memory (Corridor)</option>
+                        <option value="Cognitive Flexibility">Cognitive Flexibility</option>
+                        <option value="Physics Quiz">Physics Quiz</option>
+                        <option value="Mathematics Quiz">Mathematics Quiz</option>
+                        <option value="Interview Prep">Interview Prep</option>
+                    </select>
+                </div>
+
+                <!-- 2. General Rating -->
+                <div class="form-group">
+                    <label class="form-label">General Rating</label>
+                    <div class="rating-options">
+                        <label class="radio-label"><input type="radio" name="rating" value="Very Good" required> Very
+                            Good</label>
+                        <label class="radio-label"><input type="radio" name="rating" value="Good"> Good</label>
+                        <label class="radio-label"><input type="radio" name="rating" value="Average"> Average</label>
+                        <label class="radio-label"><input type="radio" name="rating" value="Poor"> Poor</label>
+                    </div>
+                </div>
+
+                <!-- 3. Issues -->
+                <div class="form-group">
+                    <label class="form-label">Issues (Select all that apply)</label>
+                    <div class="checkbox-grid">
+                        <label class="check-label"><input type="checkbox" name="issues" value="Unclear Instructions">
+                            Unclear Instructions</label>
+                        <label class="check-label"><input type="checkbox" name="issues" value="Difficulty Mismatch">
+                            Difficulty Mismatch</label>
+                        <label class="check-label"><input type="checkbox" name="issues" value="Time Management"> Hard to
+                            Manage Time</label>
+                        <label class="check-label"><input type="checkbox" name="issues" value="Technical Glitch">
+                            Technical Glitch</label>
+                        <label class="check-label"><input type="checkbox" name="issues" value="Performance Mismatch">
+                            Score seems wrong</label>
+                    </div>
+                </div>
+
+                <!-- 4. Experience -->
+                <div class="form-group">
+                    <label class="form-label">Test Experience</label>
+                    <select id="feedbackExperience" class="form-input">
+                        <option value="Smooth">Smooth & Fluid</option>
+                        <option value="Mostly Smooth">Mostly Smooth</option>
+                        <option value="Laggy">Laggy / Stuttering</option>
+                        <option value="Difficult Controls">Controls were difficult</option>
+                    </select>
+                </div>
+
+                <!-- 5. Suggestions -->
+                <div class="form-group">
+                    <label class="form-label">Suggestions</label>
+                    <div class="checkbox-grid">
+                        <label class="check-label"><input type="checkbox" name="suggestions"
+                                value="More Similar Questions"> More Similar Questions</label>
+                        <label class="check-label"><input type="checkbox" name="suggestions"
+                                value="Closer to Real Exam"> Closer to Real Exam</label>
+                        <label class="check-label"><input type="checkbox" name="suggestions" value="Detailed Analysis">
+                            More Detailed Analysis</label>
+                        <label class="check-label"><input type="checkbox" name="suggestions" value="Adjustable Timer">
+                            Adjustable Timer</label>
+                    </div>
+                </div>
+
+                <!-- 6. Other -->
+                <div class="form-group">
+                    <label class="form-label">Other Comments</label>
+                    <textarea id="feedbackOther" class="form-input" rows="3" placeholder="Tell us more..."></textarea>
+                </div>
+
+                <button type="submit" class="auth-btn">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

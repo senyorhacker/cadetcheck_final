@@ -1,0 +1,1069 @@
+/* CadetCheck Landing Page Styles */
+
+:root {
+    --primary: #2c3e50;
+    --accent: #3498db;
+    --success: #27ae60;
+    --danger: #e74c3c;
+    --warning: #f39c12;
+    --dark: #1a252f;
+    --gray: #7f8c8d;
+    --light: #ecf0f1;
+    --white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: var(--dark);
+    overflow-x: hidden;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Hero Section with 3D Airplane */
+.hero {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sky-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg,
+            #1e3c72 0%,
+            #2a5298 30%,
+            #7e8ba3 60%,
+            #f5af19 100%);
+    animation: skyShift 20s ease-in-out infinite;
+    z-index: 0;
+}
+
+@keyframes skyShift {
+
+    0%,
+    100% {
+        background: linear-gradient(180deg, #1e3c72 0%, #2a5298 30%, #7e8ba3 60%, #f5af19 100%);
+    }
+
+    50% {
+        background: linear-gradient(180deg, #0f2027 0%, #203a43 30%, #2c5364 60%, #fc4a1a 100%);
+    }
+}
+
+/* Clouds */
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 100px;
+    opacity: 0.6;
+    animation: floatCloud linear infinite;
+}
+
+.cloud::before,
+.cloud::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 100px;
+}
+
+.cloud-1 {
+    width: 120px;
+    height: 40px;
+    top: 15%;
+    left: -150px;
+    animation-duration: 45s;
+}
+
+.cloud-1::before {
+    width: 60px;
+    height: 60px;
+    top: -30px;
+    left: 15px;
+}
+
+.cloud-1::after {
+    width: 80px;
+    height: 50px;
+    top: -20px;
+    right: 15px;
+}
+
+.cloud-2 {
+    width: 100px;
+    height: 35px;
+    top: 35%;
+    left: -120px;
+    animation-duration: 55s;
+    animation-delay: 5s;
+}
+
+.cloud-2::before {
+    width: 50px;
+    height: 50px;
+    top: -25px;
+    left: 10px;
+}
+
+.cloud-2::after {
+    width: 70px;
+    height: 45px;
+    top: -18px;
+    right: 10px;
+}
+
+.cloud-3 {
+    width: 140px;
+    height: 45px;
+    top: 60%;
+    left: -160px;
+    animation-duration: 50s;
+    animation-delay: 10s;
+}
+
+.cloud-3::before {
+    width: 70px;
+    height: 70px;
+    top: -35px;
+    left: 20px;
+}
+
+.cloud-3::after {
+    width: 90px;
+    height: 55px;
+    top: -25px;
+    right: 20px;
+}
+
+.cloud-4 {
+    width: 110px;
+    height: 38px;
+    top: 80%;
+    left: -130px;
+    animation-duration: 60s;
+    animation-delay: 15s;
+}
+
+.cloud-4::before {
+    width: 55px;
+    height: 55px;
+    top: -28px;
+    left: 12px;
+}
+
+.cloud-4::after {
+    width: 75px;
+    height: 48px;
+    top: -20px;
+    right: 12px;
+}
+
+@keyframes floatCloud {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(100vw + 200px));
+    }
+}
+
+/* 3D Airplane - Realistic Professional Model */
+.airplane-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    perspective: 2000px;
+    z-index: 5;
+}
+
+.airplane {
+    position: absolute;
+    width: 300px;
+    height: 80px;
+    transform-style: preserve-3d;
+    animation: flyAirplaneRealistic 35s ease-in-out infinite;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes flyAirplaneRealistic {
+    0% {
+        left: -350px;
+        top: 15%;
+        transform: rotateY(-25deg) rotateX(8deg) rotateZ(-12deg) scale(0.7);
+    }
+
+    15% {
+        left: 20%;
+        top: 25%;
+        transform: rotateY(-8deg) rotateX(3deg) rotateZ(-5deg) scale(0.9);
+    }
+
+    30% {
+        left: 40%;
+        top: 20%;
+        transform: rotateY(5deg) rotateX(-2deg) rotateZ(8deg) scale(1);
+    }
+
+    45% {
+        left: 55%;
+        top: 30%;
+        transform: rotateY(12deg) rotateX(-6deg) rotateZ(-4deg) scale(1.05);
+    }
+
+    60% {
+        left: 70%;
+        top: 22%;
+        transform: rotateY(8deg) rotateX(4deg) rotateZ(10deg) scale(1);
+    }
+
+    75% {
+        left: 82%;
+        top: 35%;
+        transform: rotateY(15deg) rotateX(-5deg) rotateZ(-7deg) scale(0.95);
+    }
+
+    90% {
+        left: 95%;
+        top: 28%;
+        transform: rotateY(20deg) rotateX(6deg) rotateZ(12deg) scale(0.85);
+    }
+
+    100% {
+        left: calc(100% + 350px);
+        top: 18%;
+        transform: rotateY(25deg) rotateX(-8deg) rotateZ(15deg) scale(0.7);
+    }
+}
+
+/* Fuselage */
+.airplane-body {
+    position: absolute;
+    width: 180px;
+    height: 40px;
+    background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 30%, #e8e8e8 50%, #d0d0d0 100%);
+    border-radius: 90px 15px 15px 90px;
+    box-shadow: inset 0 -3px 8px rgba(0, 0, 0, 0.15), inset 0 3px 6px rgba(255, 255, 255, 0.6), 0 8px 20px rgba(0, 0, 0, 0.25);
+    z-index: 5;
+    top: 20px;
+    left: 60px;
+}
+
+.airplane-body::before {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 22px;
+    background: linear-gradient(135deg, rgba(100, 150, 220, 0.7) 0%, rgba(150, 180, 230, 0.5) 50%, rgba(200, 220, 255, 0.3) 100%);
+    border-radius: 25px 8px 8px 25px;
+    top: 9px;
+    left: 8px;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), inset 0 -2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.airplane-body::after {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 6px;
+    background: repeating-linear-gradient(90deg, rgba(100, 150, 220, 0.5) 0px, rgba(100, 150, 220, 0.5) 8px, transparent 8px, transparent 12px);
+    border-radius: 3px;
+    top: 17px;
+    left: 65px;
+}
+
+/* Wings */
+.airplane-wing {
+    position: absolute;
+    width: 150px;
+    height: 90px;
+    background: linear-gradient(135deg, #f8f8f8 0%, #e5e5e5 40%, #d5d5d5 100%);
+    border-radius: 80px 80px 5px 5px;
+    top: 30px;
+    left: 110px;
+    transform: rotateX(-25deg) rotateZ(-3deg);
+    transform-origin: center top;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3), inset 0 3px 6px rgba(255, 255, 255, 0.5), inset 0 -2px 5px rgba(0, 0, 0, 0.15);
+    z-index: 3;
+}
+
+.airplane-wing::before {
+    content: '';
+    position: absolute;
+    width: 140px;
+    height: 15px;
+    background: linear-gradient(90deg, rgba(200, 200, 200, 0.6), transparent);
+    bottom: 10px;
+    left: 5px;
+    border-radius: 0 0 5px 5px;
+}
+
+.wing-right {
+    top: 30px;
+    transform: rotateX(25deg) rotateZ(183deg);
+}
+
+/* Tail */
+.airplane-tail {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 45px solid transparent;
+    border-right: 0px solid transparent;
+    border-bottom: 60px solid #e5e5e5;
+    right: 55px;
+    top: -15px;
+    filter: drop-shadow(3px 4px 6px rgba(0, 0, 0, 0.25));
+    z-index: 4;
+    transform: rotateZ(-5deg);
+}
+
+.airplane-tail::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 42px solid transparent;
+    border-right: 0px solid transparent;
+    border-bottom: 55px solid #f5f5f5;
+    left: -42px;
+    top: 2px;
+}
+
+.airplane-tail::after {
+    content: '';
+    position: absolute;
+    width: 70px;
+    height: 25px;
+    background: linear-gradient(135deg, #f0f0f0, #d8d8d8);
+    border-radius: 0 15px 0 0;
+    bottom: -8px;
+    left: -60px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Engine */
+.airplane-propeller {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    background: radial-gradient(circle, #c0c0c0 0%, #a0a0a0 40%, #808080 100%);
+    border-radius: 50%;
+    left: 95px;
+    top: 52px;
+    z-index: 6;
+    box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.airplane-propeller::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(255, 255, 255, 0.3) 60deg, transparent 120deg, rgba(255, 255, 255, 0.3) 180deg, transparent 240deg, rgba(255, 255, 255, 0.3) 300deg, transparent 360deg);
+    border-radius: 50%;
+    animation: turbineSpin 0.15s linear infinite;
+}
+
+@keyframes turbineSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.airplane-propeller::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 20%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+    right: 60px;
+    top: 16px;
+    filter: blur(2px);
+    opacity: 0.7;
+    animation: contrailFlow 2s ease-in-out infinite;
+}
+
+@keyframes contrailFlow {
+
+    0%,
+    100% {
+        opacity: 0.7;
+        filter: blur(2px);
+    }
+
+    50% {
+        opacity: 0.5;
+        filter: blur(3px);
+    }
+}
+
+/* Shadow */
+.airplane-shadow {
+    position: absolute;
+    width: 220px;
+    height: 35px;
+    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 40%, transparent 100%);
+    bottom: -120px;
+    left: 40px;
+    filter: blur(15px);
+    animation: shadowRealistic 35s ease-in-out infinite;
+    z-index: 1;
+}
+
+@keyframes shadowRealistic {
+
+    0%,
+    100% {
+        opacity: 0.25;
+        transform: scale(0.7) translateX(-20px);
+    }
+
+    30% {
+        opacity: 0.45;
+        transform: scale(1) translateX(0px);
+    }
+
+    60% {
+        opacity: 0.5;
+        transform: scale(1.1) translateX(10px);
+    }
+}
+
+/* Hero Content */
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 40px 20px;
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo {
+    font-size: 72px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.tagline {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.description {
+    font-size: 18px;
+    margin-bottom: 30px;
+    opacity: 0.95;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 18px 45px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, var(--accent) 0%, #2980b9 100%);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(52, 152, 219, 0.6);
+}
+
+.cta-button:active {
+    transform: translateY(-1px);
+}
+
+/* About Section */
+.about {
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.section-title {
+    font-size: 48px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--primary);
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 20px;
+    color: var(--gray);
+    margin-bottom: 60px;
+}
+
+.about-text {
+    font-size: 20px;
+    line-height: 1.8;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 60px;
+    color: var(--dark);
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    margin-top: 60px;
+}
+
+.feature {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.feature:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.feature h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--primary);
+}
+
+.feature p {
+    font-size: 16px;
+    color: var(--gray);
+    line-height: 1.6;
+}
+
+/* Games Section */
+.games {
+    padding: 100px 20px;
+    background: white;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
+}
+
+.game-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px 30px;
+    border-radius: 20px;
+    color: white;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.game-card:hover::before {
+    opacity: 1;
+}
+
+.game-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 25px 60px rgba(102, 126, 234, 0.4);
+}
+
+.game-card:nth-child(2) {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.game-card:nth-child(2):hover {
+    box-shadow: 0 25px 60px rgba(240, 147, 251, 0.4);
+}
+
+.game-card:nth-child(3) {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.game-card:nth-child(3):hover {
+    box-shadow: 0 25px 60px rgba(79, 172, 254, 0.4);
+}
+
+.game-card:nth-child(4) {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.game-card:nth-child(4):hover {
+    box-shadow: 0 25px 60px rgba(67, 233, 123, 0.4);
+}
+
+.game-card:nth-child(5) {
+    background: linear-gradient(135deg, #FF9966 0%, #FF5E62 100%);
+}
+
+.game-card:nth-child(5):hover {
+    box-shadow: 0 25px 60px rgba(255, 94, 98, 0.4);
+}
+
+.game-icon {
+    font-size: 72px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.game-card h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.game-card p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    opacity: 0.95;
+}
+
+.game-link {
+    display: inline-block;
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 12px 25px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.game-link:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(5px);
+}
+
+/* Testimonials Section */
+.testimonials {
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    overflow: hidden;
+}
+
+.testimonial-carousel {
+    position: relative;
+    overflow: hidden;
+    margin-top: 60px;
+    padding: 20px 0;
+}
+
+.testimonial-track {
+    display: flex;
+    gap: 30px;
+    animation: slideTestimonials 30s linear infinite;
+    width: max-content;
+}
+
+.testimonial-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes slideTestimonials {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(-100% / 2));
+    }
+}
+
+.testimonial-card {
+    min-width: 350px;
+    background: white;
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.testimonial-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.testimonial-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, #2980b9 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.testimonial-info h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 3px;
+}
+
+.testimonial-info p {
+    font-size: 14px;
+    color: var(--gray);
+}
+
+.testimonial-rating {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.testimonial-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--dark);
+    font-style: italic;
+}
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 40px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: white;
+    transform: scale(1.3);
+}
+
+.dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* FAQ Section */
+.faq {
+    padding: 100px 20px;
+    background: white;
+}
+
+.faq-list {
+    max-width: 900px;
+    margin: 0 auto;
+    margin-top: 60px;
+}
+
+.faq-item {
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.faq-question {
+    width: 100%;
+    padding: 25px 30px;
+    background: transparent;
+    border: none;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+    color: var(--accent);
+}
+
+.faq-icon {
+    font-size: 28px;
+    font-weight: 300;
+    transition: transform 0.3s ease;
+    color: var(--accent);
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(45deg);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 30px;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    padding: 0 30px 25px;
+}
+
+.faq-answer p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--dark);
+}
+
+/* Footer */
+.footer {
+    background: var(--primary);
+    color: white;
+    padding: 60px 20px 30px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-brand h3 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.footer-brand p {
+    font-size: 16px;
+    opacity: 0.8;
+    max-width: 400px;
+}
+
+.footer-links {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    opacity: 0.9;
+}
+
+.footer-links a:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.footer-bottom p {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .logo {
+        font-size: 48px;
+    }
+
+    .tagline {
+        font-size: 20px;
+    }
+
+    .description {
+        font-size: 16px;
+    }
+
+    .section-title {
+        font-size: 36px;
+    }
+
+    .section-subtitle {
+        font-size: 18px;
+    }
+
+    .airplane {
+        width: 120px;
+        height: 40px;
+    }
+
+    .airplane-body {
+        width: 80px;
+        height: 20px;
+    }
+
+    .airplane-wing {
+        width: 50px;
+        height: 35px;
+    }
+
+    .cloud {
+        transform: scale(0.7);
+    }
+
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .testimonial-card {
+        min-width: 300px;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-links {
+        justify-content: center;
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        min-height: 500px;
+    }
+
+    .logo {
+        font-size: 36px;
+    }
+
+    .tagline {
+        font-size: 18px;
+    }
+
+    .cta-button {
+        padding: 15px 35px;
+        font-size: 16px;
+    }
+
+    .section-title {
+        font-size: 28px;
+    }
+
+    .testimonial-card {
+        min-width: 280px;
+        padding: 25px;
+    }
+
+    .faq-question {
+        font-size: 16px;
+        padding: 20px;
+    }
+
+    .faq-answer {
+        padding: 0 20px;
+    }
+
+    .faq-item.active .faq-answer {
+        padding: 0 20px 20px;
+    }
+}

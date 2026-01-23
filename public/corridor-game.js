@@ -1,0 +1,448 @@
+// Corridor Game Configuration
+const CONFIG = {
+    TOTAL_LEVELS: 15,
+    QUESTIONS_PER_LEVEL: 10,
+    TOTAL_CORRIDORS: 10,
+
+    // Level configurations
+    LEVEL_CONFIG: {
+        '1-5': { closedCorridors: 2, totalCities: 6, openCities: 3, answerTime: 10000 },
+        '6-9': { closedCorridors: 3, totalCities: 8, openCities: 4, answerTime: 12000 },
+        '10-13': { closedCorridors: 4, totalCities: 10, openCities: 5, answerTime: 15000 },
+        '14-15': { closedCorridors: 5, totalCities: 12, openCities: 6, answerTime: 15000 }
+    },
+
+    DISPLAY_TIME: 4000,  // Corridor display time
+    SPEECH_GAP: 2000,    // Gap between city announcements
+    COMPARISON_TIME: 3000 // Before next question
+};
+
+// City List (65 cities, alphabetically arranged in 5 columns)
+const CITIES = [
+    'Amsterdam', 'Bishkek', 'Houston', 'Milan', 'Singapore',
+    'Ankara', 'Bologna', 'Kathmandu', 'Montreal', 'Stockholm',
+    'Ashgabat', 'Bombay', 'Kiev', 'Moscow', 'Stuttgart',
+    'Baghdad', 'Boston', 'Lagos', 'Munich', 'Sydney',
+    'Bahrain', 'Bremen', 'Lisbon', 'Paris', 'Tashkent',
+    'Baku', 'Budapest', 'London', 'Phuket', 'Tokyo',
+    'Bangkok', 'Dallas', 'Lyon', 'Porto', 'Toronto',
+    'Basel', 'Delhi', 'Madrid', 'Prague', 'Tunis',
+    'Batumi', 'Doha', 'Malaga', 'Riyadh', 'Valencia',
+    'Beirut', 'Dubai', 'Malta', 'Rotterdam', 'Venice',
+    'Belgrade', 'Dublin', 'Manchester', 'Salzburg', 'Vienna',
+    'Berlin', 'Hamburg', 'Melbourne', 'Santiago', 'Zagreb',
+    'Bilbao', 'Havana', 'Miami', 'Shanghai', 'Zurich'
+];
+
+// Game State
+let currentLevel = 1;
+let currentQuestion = 0;
+let score = {
+    correct: 0,
+    incorrect: 0
+};
+
+// Current question data
+let question = {
+    corridors: [],
+    assignments: [],
+    correctAnswer: [],
+    userAnswer: []
+};
+
+// DOM Elements
+const elements = {
+    displayPhase: document.getElementById('displayPhase'),
+    audioPhase: document.getElementById('audioPhase'),
+    answerPhase: document.getElementById('answerPhase'),
+    comparisonPhase: document.getElementById('comparisonPhase'),
+    corridorsDisplay: document.getElementById('corridorsDisplay'),
+    audioText: document.getElementById('audioText'),
+    citiesGrid: document.getElementById('citiesGrid'),
+    correctCitiesList: document.getElementById('correctCitiesList'),
+    userCitiesList: document.getElementById('userCitiesList'),
+    resultDisplay: document.getElementById('resultDisplay'),
+    submitBtn: document.getElementById('submitBtn'),
+    scoreModal: document.getElementById('scoreModal'),
+    currentLevel: document.getElementById('currentLevel'),
+    currentQuestion: document.getElementById('currentQuestion'),
+    correctCount: document.getElementById('correctCount'),
+    nextLevelButton: document.getElementById('nextLevelButton'),
+    retryButton: document.getElementById('retryButton'),
+    backToLevelsButton: document.getElementById('backToLevelsButton')
+};
+
+// Event Listeners
+elements.submitBtn.addEventListener('click', submitAnswer);
+elements.nextLevelButton.addEventListener('click', nextLevel);
+elements.retryButton.addEventListener('click', retryLevel);
+elements.backToLevelsButton.addEventListener('click', () => {
+    window.location.href = 'level-select-corridor.html?game=corridor-memory';
+});
+
+// Initialize
+init();
+
+function init() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const levelParam = urlParams.get('level');
+
+    if (levelParam) {
+        const parsedLevel = parseInt(levelParam);
+        if (parsedLevel >= 1 && parsedLevel <= CONFIG.TOTAL_LEVELS) {
+            currentLevel = parsedLevel;
+        }
+    }
+
+    resetScore();
+    updateLevelDisplay();
+    generateCityCheckboxes();
+    startQuestion();
+}
+
+function getLevelConfig(level) {
+    if (level <= 5) return CONFIG.LEVEL_CONFIG['1-5'];
+    if (level <= 9) return CONFIG.LEVEL_CONFIG['6-9'];
+    if (level <= 13) return CONFIG.LEVEL_CONFIG['10-13'];
+    return CONFIG.LEVEL_CONFIG['14-15'];
+}
+
+function startQuestion() {
+    currentQuestion++;
+    updateQuestionDisplay();
+
+    question = {
+        corridors: [],
+        assignments: [],
+        correctAnswer: [],
+        userAnswer: []
+    };
+
+    generateCorridors();
+    showPhase('display');
+    displayCorridors();
+
+    // After display time, move to audio phase
+    setTimeout(() => {
+        generateAssignments();
+        playAudioSequence();
+    }, CONFIG.DISPLAY_TIME);
+}
+
+function generateCorridors() {
+    const config = getLevelConfig(currentLevel);
+    const closedCount = config.closedCorridors;
+
+    // All corridors start as open (true)
+    let corridors = Array(CONFIG.TOTAL_CORRIDORS).fill(true);
+
+    // Randomly select closed corridors
+    let closedIndices = [];
+    while (closedIndices.length < closedCount) {
+        let idx = Math.floor(Math.random() * CONFIG.TOTAL_CORRIDORS);
+        if (!closedIndices.includes(idx)) {
+            closedIndices.push(idx);
+            corridors[idx] = false; // closed
+        }
+    }
+
+    question.corridors = corridors;
+}
+
+function displayCorridors() {
+    elements.corridorsDisplay.innerHTML = '';
+
+    for (let i = 0; i < CONFIG.TOTAL_CORRIDORS; i++) {
+        const isOpen = question.corridors[i];
+        const corridorNum = i + 1;
+
+        const corridorRow = document.createElement('div');
+        corridorRow.className = `corridor-row ${isOpen ? 'open' : 'closed'}`;
+        corridorRow.innerHTML = `
+            <div class="corridor-number">${corridorNum}. Corridor</div>
+            <div class="corridor-line"></div>
+            <div class="corridor-plane">✈️</div>
+            <div class="corridor-status">${isOpen ? '✓' : '✗'}</div>
+        `;
+
+        elements.corridorsDisplay.appendChild(corridorRow);
+    }
+}
+
+function generateAssignments() {
+    const config = getLevelConfig(currentLevel);
+    const totalCities = config.totalCities;
+
+    // Shuffle and select cities
+    const shuffledCities = [...CITIES].sort(() => Math.random() - 0.5);
+    const selectedCities = shuffledCities.slice(0, totalCities);
+
+    let assignments = [];
+    let correctAnswer = [];
+
+    for (let city of selectedCities) {
+        // Random corridor (0-9)
+        const corridorIdx = Math.floor(Math.random() * CONFIG.TOTAL_CORRIDORS);
+        const corridorNum = corridorIdx + 1;
+        const isOpen = question.corridors[corridorIdx];
+
+        assignments.push({
+            city: city,
+            corridor: corridorNum,
+            isOpen: isOpen
+        });
+
+        if (isOpen) {
+            correctAnswer.push(city);
+        }
+    }
+
+    question.assignments = assignments;
+    question.correctAnswer = correctAnswer.sort(); // Sort alphabetically
+}
+
+function playAudioSequence() {
+    showPhase('audio');
+
+    // Don't show text - purely audio test
+    elements.audioText.textContent = 'Listening...';
+
+    let index = 0;
+
+    function speakNext() {
+        if (index >= question.assignments.length) {
+            // Audio done, move to answer phase
+            setTimeout(() => {
+                startAnswerPhase();
+            }, 500);
+            return;
+        }
+
+        const assignment = question.assignments[index];
+        const text = `To ${assignment.city} on Corridor ${assignment.corridor}`;
+
+        // DO NOT display text - audio only!
+
+        // Speak using ResponsiveVoice
+        if (typeof responsiveVoice !== 'undefined') {
+            responsiveVoice.speak(text, "US English Male", {
+                rate: 0.9,
+                onend: () => {
+                    setTimeout(() => {
+                        index++;
+                        speakNext();
+                    }, CONFIG.SPEECH_GAP);
+                }
+            });
+        } else {
+            // Fallback: Web Speech API
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+
+            utterance.onend = () => {
+                setTimeout(() => {
+                    index++;
+                    speakNext();
+                }, CONFIG.SPEECH_GAP);
+            };
+
+            speechSynthesis.speak(utterance);
+        }
+    }
+
+    speakNext();
+}
+
+function generateCityCheckboxes() {
+    elements.citiesGrid.innerHTML = '';
+
+    CITIES.forEach(city => {
+        const checkboxDiv = document.createElement('div');
+        checkboxDiv.className = 'city-checkbox';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `city-${city}`;
+        checkbox.value = city;
+
+        const label = document.createElement('label');
+        label.htmlFor = `city-${city}`;
+        label.textContent = city;
+
+        checkboxDiv.appendChild(checkbox);
+        checkboxDiv.appendChild(label);
+        elements.citiesGrid.appendChild(checkboxDiv);
+    });
+}
+
+function startAnswerPhase() {
+    showPhase('answer');
+
+    // Clear previous selections
+    document.querySelectorAll('.city-checkbox input').forEach(cb => {
+        cb.checked = false;
+    });
+
+    // Start answer timer
+    const config = getLevelConfig(currentLevel);
+    setTimeout(() => {
+        submitAnswer();
+    }, config.answerTime);
+}
+
+function showPhase(phase) {
+    elements.displayPhase.classList.add('hidden');
+    elements.audioPhase.classList.add('hidden');
+    elements.answerPhase.classList.add('hidden');
+    elements.comparisonPhase.classList.add('hidden');
+
+    if (phase === 'display') {
+        elements.displayPhase.classList.remove('hidden');
+    } else if (phase === 'audio') {
+        elements.audioPhase.classList.remove('hidden');
+    } else if (phase === 'answer') {
+        elements.answerPhase.classList.remove('hidden');
+    } else if (phase === 'comparison') {
+        elements.comparisonPhase.classList.remove('hidden');
+    }
+}
+
+function submitAnswer() {
+    // Get selected cities
+    const selectedCheckboxes = document.querySelectorAll('.city-checkbox input:checked');
+    question.userAnswer = Array.from(selectedCheckboxes).map(cb => cb.value).sort();
+
+    // Validate
+    const isCorrect = validateAnswer();
+
+    if (isCorrect) {
+        score.correct++;
+    } else {
+        score.incorrect++;
+    }
+
+    updateScoreDisplay();
+    showComparison(isCorrect);
+}
+
+function validateAnswer() {
+    const userAns = question.userAnswer;
+    const correctAns = question.correctAnswer;
+
+    if (userAns.length !== correctAns.length) {
+        return false;
+    }
+
+    for (let i = 0; i < userAns.length; i++) {
+        if (userAns[i] !== correctAns[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function showComparison(isCorrect) {
+    showPhase('comparison');
+
+    // Display correct answer
+    elements.correctCitiesList.innerHTML = '';
+    question.correctAnswer.forEach(city => {
+        const tag = document.createElement('div');
+        tag.className = 'city-tag';
+        tag.textContent = city;
+        elements.correctCitiesList.appendChild(tag);
+    });
+
+    // Display user answer
+    elements.userCitiesList.innerHTML = '';
+    if (question.userAnswer.length === 0) {
+        elements.userCitiesList.innerHTML = '<div class="city-tag">—</div>';
+    } else {
+        question.userAnswer.forEach(city => {
+            const tag = document.createElement('div');
+            tag.className = `city-tag ${question.correctAnswer.includes(city) ? 'correct' : ''}`;
+            tag.textContent = city;
+            elements.userCitiesList.appendChild(tag);
+        });
+    }
+
+    // Display result
+    elements.resultDisplay.className = `result-display ${isCorrect ? 'correct' : 'incorrect'}`;
+    elements.resultDisplay.innerHTML = `
+        <div class="result-icon">${isCorrect ? '✓' : '✗'}</div>
+        <div class="result-text">${isCorrect ? 'Doğru' : 'Yanlış'}</div>
+    `;
+
+    // Auto-proceed
+    setTimeout(() => {
+        if (currentQuestion >= CONFIG.QUESTIONS_PER_LEVEL) {
+            endLevel();
+        } else {
+            startQuestion();
+        }
+    }, CONFIG.COMPARISON_TIME);
+}
+
+function endLevel() {
+    showScoreModal();
+}
+
+function showScoreModal() {
+    const totalQuestions = score.correct + score.incorrect;
+    const successRate = totalQuestions > 0 ? (score.correct / totalQuestions) : 0;
+
+    document.getElementById('scoreLevel').textContent = currentLevel;
+    document.getElementById('modalCorrect').textContent = score.correct;
+    document.getElementById('modalIncorrect').textContent = score.incorrect;
+    document.getElementById('modalSuccess').textContent = `${Math.round(successRate * 100)}%`;
+
+    if (currentLevel >= CONFIG.TOTAL_LEVELS) {
+        elements.nextLevelButton.style.display = 'none';
+        elements.retryButton.textContent = 'Tekrar Oyna';
+    } else {
+        elements.nextLevelButton.style.display = 'block';
+        elements.retryButton.textContent = 'Tekrar Dene';
+    }
+
+    elements.scoreModal.classList.remove('hidden');
+}
+
+function nextLevel() {
+    elements.scoreModal.classList.add('hidden');
+    if (currentLevel < CONFIG.TOTAL_LEVELS) {
+        currentLevel++;
+        currentQuestion = 0;
+        resetScore();
+        updateLevelDisplay();
+        startQuestion();
+    }
+}
+
+function retryLevel() {
+    elements.scoreModal.classList.add('hidden');
+    currentQuestion = 0;
+    resetScore();
+    startQuestion();
+}
+
+function resetScore() {
+    score = {
+        correct: 0,
+        incorrect: 0
+    };
+    updateScoreDisplay();
+}
+
+function updateLevelDisplay() {
+    elements.currentLevel.textContent = currentLevel;
+}
+
+function updateQuestionDisplay() {
+    elements.currentQuestion.textContent = currentQuestion;
+}
+
+function updateScoreDisplay() {
+    elements.correctCount.textContent = score.correct;
+}

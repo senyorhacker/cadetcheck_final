@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Management - CadetCheck Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #3b82f6;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar (Same as other admin pages) */
+        .sidebar {
+            width: 250px;
+            background: var(--secondary);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            text-decoration: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        /* Feedback Table */
+        .table-container {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.5);
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            font-size: 0.95rem;
+        }
+
+        .rating-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .rating-very-good {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .rating-good {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .rating-average {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .rating-poor {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="admin-panel.html" class="logo">CadetCheck Admin</a>
+        <nav>
+            <a href="admin-panel.html" class="nav-link">
+                <span>📊</span> Dashboard
+            </a>
+            <a href="admin-users.html" class="nav-link">
+                <span>👥</span> Users
+            </a>
+            <a href="admin-codes.html" class="nav-link">
+                <span>🔑</span> Access Codes
+            </a>
+            <a href="admin-feedback.html" class="nav-link active">
+                <span>💬</span> Feedback
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <h1 class="title">User Feedback</h1>
+            <div style="color: var(--text-muted);">
+                Total Feedback: <span id="feedbackCount">0</span>
+            </div>
+        </header>
+
+        <div class="table-container">
+            <table id="feedbackTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>User</th>
+                        <th>Test/Module</th>
+                        <th>Rating</th>
+                        <th>Experience</th>
+                        <th>Issues</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody id="feedbackTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding: 2rem; color: var(--text-muted);">Loading
+                            feedback...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = '/api';
+
+        document.addEventListener('DOMContentLoaded', loadFeedback);
+
+        async function loadFeedback() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = 'login.html'; // Admin login essentially
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/feedback`, {
+                    headers: { 'Authorization': `Bearer ${token}` } // Assuming admin token works same way
+                });
+
+                if (!res.ok) throw new Error('Failed to load feedback');
+
+                const feedbacks = await res.json();
+                document.getElementById('feedbackCount').textContent = feedbacks.length;
+                renderTable(feedbacks);
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('feedbackTableBody').innerHTML = `
+                    <tr><td colspan="7" style="color: #ef4444; text-align: center;">Error loading feedback. verify admin token.</td></tr>
+                `;
+            }
+        }
+
+        function renderTable(feedbacks) {
+            const tbody = document.getElementById('feedbackTableBody');
+            if (feedbacks.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem;">No feedback submitted yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = feedbacks.map(f => {
+                const date = new Date(f.created_at).toLocaleDateString() + ' ' + new Date(f.created_at).toLocaleTimeString();
+
+                let ratingClass = 'rating-average';
+                if (f.general_rating === 'Very Good') ratingClass = 'rating-very-good';
+                if (f.general_rating === 'Good') ratingClass = 'rating-good';
+                if (f.general_rating === 'Poor') ratingClass = 'rating-poor';
+
+                const issues = f.issues ? f.issues.map(i => `<span class="tag">${i}</span>`).join('') : '-';
+                // Suggestions could be tooltip or new col, let's append to comments for space
+                const comments = (f.other_comments || '') + (f.suggestions && f.suggestions.length ? '<br><small>Suggestions: ' + f.suggestions.join(', ') + '</small>' : '');
+
+                return `
+                    <tr>
+                        <td style="white-space: nowrap; color: var(--text-muted); font-size: 0.85rem;">${date}</td>
+                        <td>
+                            <div style="font-weight: 500;">${f.full_name}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">${f.email}</div>
+                        </td>
+                        <td>${f.test_type}</td>
+                        <td><span class="rating-badge ${ratingClass}">${f.general_rating}</span></td>
+                        <td>${f.experience || '-'}</td>
+                        <td style="max-width: 200px;">${issues}</td>
+                        <td style="max-width: 300px; font-size: 0.9rem;">${comments || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+
+</html>

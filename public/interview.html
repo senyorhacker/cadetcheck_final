@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mülakat Hazırlık Sistemi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTML2PDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        gray: {
+                            850: '#1f2937',
+                            900: '#111827',
+                            950: '#030712',
+                        }
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sound Wave Animation */
+        .sound-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            gap: 4px;
+        }
+
+        .bar {
+            width: 6px;
+            background: #6366f1;
+            border-radius: 4px;
+            animation: sound 0.5s ease-in-out infinite alternate;
+        }
+
+        .bar:nth-child(1) {
+            animation-delay: 0.1s;
+            height: 15px;
+        }
+
+        .bar:nth-child(2) {
+            animation-delay: 0.2s;
+            height: 25px;
+        }
+
+        .bar:nth-child(3) {
+            animation-delay: 0.3s;
+            height: 35px;
+        }
+
+        .bar:nth-child(4) {
+            animation-delay: 0.4s;
+            height: 25px;
+        }
+
+        .bar:nth-child(5) {
+            animation-delay: 0.5s;
+            height: 15px;
+        }
+
+        @keyframes sound {
+            0% {
+                height: 10px;
+                opacity: 0.5;
+            }
+
+            100% {
+                height: 40px;
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gray-950 text-gray-200 min-h-screen font-sans selection:bg-indigo-500 selection:text-white flex flex-col">
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 bg-gray-950/90 backdrop-blur-md border-b border-gray-800 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="location.href='dashboard.html'">
+                <div
+                    class="w-9 h-9 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20 text-lg">
+                    ←</div>
+                <h1 class="text-lg font-bold tracking-tight text-white hidden sm:block">Panele Dön</h1>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <div class="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Genel İlerleme</div>
+                    <div class="text-sm font-bold text-indigo-400" id="global-progress">0%</div>
+                </div>
+                <div class="h-8 w-[1px] bg-gray-800 hidden sm:block"></div>
+                <button onclick="downloadAnswers()"
+                    class="text-sm bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-colors border border-indigo-500 flex items-center gap-2 shadow-lg shadow-indigo-500/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                    <span>PDF İndir</span>
+                </button>
+                <button onclick="clearAllData()" class="text-sm text-red-400 hover:text-red-300 transition-colors p-2"
+                    title="Sıfırla">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+
+        <!-- VIEW 1: DASHBOARD (MODULE GRID) -->
+        <div id="dashboard-view" class="fade-in">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-white mb-3">Hazırlık Modülleri</h2>
+                <p class="text-gray-400">Çalışmak istediğiniz alanı seçin. İlerlemeniz otomatik kaydedilir.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="module-grid">
+                <!-- Modules will be injected here -->
+            </div>
+
+            <!-- SIMULATION CARD -->
+            <div
+                class="mt-12 bg-gradient-to-r from-gray-900 to-indigo-900/40 border border-indigo-500/30 rounded-2xl p-8 text-center relative overflow-hidden group">
+                <div
+                    class="absolute inset-0 bg-indigo-600/5 group-hover:bg-indigo-600/10 transition-colors duration-500">
+                </div>
+                <div class="relative z-10">
+                    <h3 class="text-2xl font-bold text-white mb-2">Canlı Mülakat Simülasyonu</h3>
+                    <p class="text-gray-300 mb-6 max-w-2xl mx-auto">
+                        Tüm modüllerden rastgele 10 soru seçilir. Sorular sesli okunur ve ekranda gizlenir.
+                        Gerçek bir mülakat gibi sesli yanıt vererek kendinizi test edin.
+                    </p>
+                    <button onclick="startSimulation()"
+                        class="inline-flex items-center px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-full transition-transform hover:scale-105 shadow-lg shadow-indigo-600/30">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                            </path>
+                        </svg>
+                        Simülasyonu Başlat
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: MODULE DETAIL (QUESTIONS) -->
+        <div id="module-view" class="hidden slide-up">
+            <!-- Navigation Breadcrumb -->
+            <button onclick="showDashboard()"
+                class="mb-6 flex items-center text-gray-400 hover:text-white transition-colors group">
+                <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Modüllere Dön
+            </button>
+
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
+                <div
+                    class="absolute top-0 right-0 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none">
+                </div>
+                <h2 id="module-title" class="text-3xl font-bold text-white mb-2 relative z-10">Modül Başlığı</h2>
+                <p id="module-desc" class="text-gray-400 relative z-10">Modül açıklaması buraya gelecek.</p>
+
+                <!-- Module Progress -->
+                <div class="mt-6">
+                    <div class="flex justify-between text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+                        <span>Modül İlerlemesi</span>
+                        <span id="module-progress-text" class="text-indigo-400">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-2">
+                        <div id="module-progress-bar" class="bg-indigo-500 h-2 rounded-full transition-all duration-500"
+                            style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="questions-list" class="space-y-8">
+                <!-- Questions will be injected here -->
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="mt-12 flex justify-between items-center border-t border-gray-800 pt-8">
+                <button onclick="showDashboard()" class="text-gray-400 hover:text-white transition-colors">← Ana
+                    Menü</button>
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+                    class="text-indigo-400 hover:text-indigo-300 transition-colors">Yukarı Çık ↑</button>
+            </div>
+        </div>
+
+        <!-- VIEW 3: LIVE SIMULATION -->
+        <div id="simulation-view"
+            class="hidden h-full flex-col justify-center items-center max-w-3xl mx-auto w-full slide-up">
+
+            <!-- Sim Header -->
+            <div class="w-full flex justify-between items-center mb-8">
+                <div class="text-gray-400 text-sm">Soru <span id="sim-q-num"
+                        class="text-white font-bold text-lg">1</span> / 10</div>
+                <div id="sim-timer"
+                    class="text-2xl font-mono font-bold text-indigo-400 bg-gray-900 px-4 py-2 rounded-lg border border-gray-800">
+                    02:00</div>
+            </div>
+
+            <!-- Interviewer Avatar -->
+            <div class="mb-8 relative">
+                <div
+                    class="w-32 h-32 rounded-full bg-gray-800 flex items-center justify-center border-4 border-gray-700 shadow-2xl relative z-10">
+                    <span class="text-4xl">👨‍✈️</span>
+                </div>
+                <!-- Speaking Animation Ring -->
+                <div id="interviewer-speaking-ring"
+                    class="hidden absolute top-0 left-0 w-32 h-32 rounded-full border-4 border-indigo-500 animate-pulse-fast z-0">
+                </div>
+            </div>
+
+            <!-- Status Text -->
+            <div id="sim-status" class="text-xl font-medium text-gray-300 mb-8 h-8">Mülakat başlıyor...</div>
+
+            <!-- Hidden Question Placeholder -->
+            <div
+                class="w-full bg-gray-900/50 p-6 rounded-xl border border-gray-800 mb-8 text-center min-h-[100px] flex items-center justify-center flex-col gap-3">
+                <p id="sim-question-placeholder" class="text-gray-500 italic">"Soru gizlendi. Lütfen dinleyin."</p>
+                <p id="sim-question-text" class="hidden text-white text-lg font-medium fade-in"></p>
+
+                <div class="flex gap-4 mt-2">
+                    <button onclick="replayQuestion()"
+                        class="text-indigo-400 text-sm hover:underline flex items-center gap-1 transition-colors hover:text-indigo-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                            </path>
+                        </svg>
+                        Tekrar Dinle
+                    </button>
+                    <button onclick="revealQuestion()"
+                        class="text-gray-400 text-sm hover:underline flex items-center gap-1 transition-colors hover:text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                            </path>
+                        </svg>
+                        Soruyu Gör
+                    </button>
+                </div>
+            </div>
+
+            <!-- User Answer Section -->
+            <div class="w-full relative">
+                <div class="absolute top-2 right-2 z-20">
+                    <button id="mic-btn" onclick="toggleRecording()"
+                        class="p-2 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors border border-gray-700"
+                        title="Sesli Yaz">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                <textarea id="sim-answer-area" rows="6"
+                    class="w-full bg-gray-900 text-gray-200 border border-gray-700 rounded-xl p-4 focus:ring-2 focus:ring-indigo-600 outline-none resize-none"
+                    placeholder="Mikrofona basıp konuşun veya yazın..."></textarea>
+
+                <!-- Listening Indicator -->
+                <div id="listening-indicator"
+                    class="hidden absolute bottom-4 left-4 flex items-center gap-2 text-red-400 text-xs font-bold animate-pulse">
+                    <div class="w-2 h-2 bg-red-500 rounded-full"></div> Dinleniyor...
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="w-full mt-8 flex justify-between">
+                <button onclick="quitSimulation()" class="text-gray-500 hover:text-gray-300">Çıkış</button>
+                <button onclick="submitSimAnswer()"
+                    class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-lg font-bold transition-all transform hover:scale-105">
+                    Cevabı Gönder & İlerle →
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW 4: SIMULATION RESULTS -->
+        <div id="simulation-result" class="hidden slide-up max-w-4xl mx-auto w-full">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Simülasyon Raporu</h2>
+            <div id="sim-report-container" class="space-y-6">
+                <!-- JS will fill this -->
+            </div>
+            <div class="mt-12 text-center pb-12">
+                <button onclick="showDashboard()"
+                    class="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-lg border border-gray-700">Ana
+                    Menüye Dön</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-950 border-t border-gray-900 py-8 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center text-gray-600 text-sm">
+            <p>&copy; 2025 Mülakat Hazırlık Platformu | Gizliliğiniz için veriler sadece tarayıcınızda tutulur.</p>
+        </div>
+    </footer>
+
+    <!-- LOGIC -->
+    <script>
+        // --- DATA: ALL QUESTIONS ---
+        const modules = [
+            {
+                id: "personality",
+                title: "Personality (Kişilik)",
+                description: "Kendini tanıtma, karakter analizi, güçlü/zayıf yönler. (English)",
+                icon: "👤",
+                color: "from-blue-600 to-blue-400",
+                questions: [
+                    "Tell me about yourself.",
+                    "Why do you want this job?",
+                    "Why should we hire you?",
+                    "What is your greatest strength?",
+                    "What is your greatest weakness?",
+                    "Why do you want to leave (or have left) your current job?",
+                    "What are your salary expectations?",
+                    "Where do you see yourself in five years?",
+                    "How do you handle stress and pressure?",
+                    "Describe a difficult work situation or project and how you overcame it.",
+                    "What are your goals for the future?",
+                    "What are you passionate about?",
+                    "What is your dream job?",
+                    "How did you hear about this position?",
+                    "What are you looking for in a new position?",
+                    "What type of work environment do you prefer?",
+                    "How would your boss and co-workers describe you?",
+                    "What do you like to do outside of work?",
+                    "Do you have any questions for us?",
+                    "What is your biggest professional achievement?",
+                    "Tell me about a time you demonstrated leadership skills.",
+                    "How do you prioritize your work?",
+                    "Are you a team player?",
+                    "What motivates you?",
+                    "How do you deal with conflict with a co-worker?",
+                    "What is your preferred management style?",
+                    "What has been your most challenging experience at work?",
+                    "What are three positive things your last boss would say about you?",
+                    "What are you looking for in your next role?",
+                    "Are you willing to relocate or travel?",
+                    "What was the last book you read?"
+                ]
+            },
+            {
+                id: "company_general",
+                title: "Company & General (Şirket & Genel)",
+                description: "Company knowledge, fleet info, and general aviation awareness. (English)",
+                icon: "🏢",
+                color: "from-purple-600 to-pink-500",
+                questions: [
+                    "What do you know about our company?",
+                    "What did you liked about our company?",
+                    "Why do you want to join us ?",
+                    "First aircraft of our company when it took off and from where to where ?",
+                    "Who is the current CEO or Chairman of our company etc.?",
+                    "Hierarchy in pilots? do you know",
+                    "Types of aircraft in our current fleet?",
+                    "Total no. of aircrafts in our fleet?",
+                    "What do you mean by low cost carrier?",
+                    "Name few International destination where we fly?",
+                    "Who is the current civil aviation minister, before him who was?",
+                    "Have you heard about airbus neo ?Tell us something you know?",
+                    "Which Aviation movie or show you have recently watched.",
+                    "Engines used in our aircrafts.",
+                    "What do you know about airbus?",
+                    "What is ICAO?",
+                    "Name few aviation subjects?",
+                    "Our headquarter?",
+                    "Current issue related to aviation ?",
+                    "Busiest airport in India and world ?",
+                    "Largest airline in terms of passengers traffic?",
+                    "What is AAI?",
+                    "Do you know about DGCA? Its role ?",
+                    "Why our cadet programs not any other?",
+                    "Boeing or Airbus your preference?",
+                    "What is standard operating procedures ?",
+                    "Aircraft manufacturing company boeing /airbus /atr belongs to which country? which is"
+                ]
+            },
+            {
+                id: "trick",
+                title: "Trick & Situational (Zorlayıcı & Durumsal)",
+                description: "Emergency scenarios, technical reasoning & mental math. (English)",
+                icon: "🎭",
+                color: "from-red-600 to-rose-500",
+                questions: [
+                    "Why two pilots in cockpit ?",
+                    "Any alternative to landing gear?",
+                    "What will you do in medical emergency?",
+                    "What will you do if captain disagree at some point with you ?",
+                    "What will you do in complete loss of control ?",
+                    "What will you do if both engine fails at 36000 ft ?",
+                    "What will you do if suddenly you see an aircraft is coming head-on towards you ?",
+                    "What happens if you perform excessive maneuvers at high speed ?",
+                    "Do navigation system works at north or south pole?",
+                    "Why engines are mounted on wings ?",
+                    "Just after take-off you heard stall warning. what you will do?",
+                    "Why it’s important to switch off mobile phones during take-off and landings?",
+                    "Can you fly an aircraft without navigation system ?",
+                    "What will you do if autopilot fails at cruise altitude ?",
+                    "Why some aircraft have engines mounted on tail section ?",
+                    "What will you do if bird strikes during take-off or landing?",
+                    "What will you do if you aircraft is running out of fuel ?",
+                    "Suppose you lost communication with ATC what you will do?",
+                    "Can you communicate with other aircrafts in your vicinity?",
+                    "What will you do if you find thunderstorm in your flight path ?",
+                    "Why no parachute in commercial jets?",
+                    "Why different type of lighting system are used in aircraft? What they mean ?",
+                    "Any alternative to Jet engine?",
+                    "Can you maneuver airbus like a fighter plane?"
+                ]
+            },
+            {
+                id: "technical",
+                title: "Technical (Havacılık)",
+                description: "Aviation Knowledge, Aerodynamics & Systems. (English)",
+                icon: "✈️",
+                color: "from-orange-500 to-red-500",
+                questions: [
+                    "Difference between aircraft and airplanes?",
+                    "What is drag?",
+                    "What is stall?",
+                    "What is turbulence? where its likely to occur?",
+                    "What is cross wind? how it affects aircraft path ? Maximum Limit?",
+                    "What is lift? how its generated or created?",
+                    "What is jet engine? Its working principle ?",
+                    "Why different type of aircrafts are there?",
+                    "How aircraft flies? types of force involved in it?",
+                    "What is flaps, slats, elevator, rudder , ailerons ... what they do?",
+                    "Turboprops vs Turbojet what is the difference?",
+                    "Bernoulli's principle ? How Its applicable to an aircraft?",
+                    "How IC or piston engine works, working principle ?",
+                    "Types of fuel used in commercial aviation?",
+                    "What is latitude & longitude? difference between them?",
+                    "What is great circle ?",
+                    "Nautical miles and km relation?",
+                    "What is mach? mach and speed relation?",
+                    "What is upwind, downwind, headwind & Tailwind ?",
+                    "Difference between stress & strain ?",
+                    "What is TCAS? Do you know about it?",
+                    "What is modulation ? types of modulation ?",
+                    "Gas laws ?",
+                    "Newton law, inertia & its Application ?",
+                    "Materials used in aircraft structure ?",
+                    "Turbine vs jet?",
+                    "Airbus vs boeing major differences?",
+                    "Name few indian and international airlines you know?",
+                    "How pilot navigates during old days?",
+                    "True north vs magnetic north?",
+                    "Heading vs course vs track? Difference?",
+                    "What is magnetic dip?",
+                    "What is radar ? How it works ?",
+                    "What is reverse thruster? have you heard or know about it?",
+                    "AC vs DC?",
+                    "IAS, true air speed, ground speed ? Difference?",
+                    "What is pitot tube?",
+                    "What is venturi effect?",
+                    "What is autopilot and its importance?",
+                    "Different layers of atmosphere ?",
+                    "Why pressure drops as you go up ?",
+                    "What do you know about airbus?",
+                    "Define center of gravity, its application ?",
+                    "What is weightlessness ?",
+                    "What is payload ?",
+                    "What is air traffic control ? Its basic role & importance ?",
+                    "Do you know FMGC? have you heard or read about this term anywhere?",
+                    "Importance of weather in aviation ? Types of seasons ?",
+                    "Why aircraft flies at high altitude ? Any advantage ?",
+                    "Difference between fly by wire vs conventional system ?",
+                    "How pilot navigates these days ?",
+                    "What is propulsion ?",
+                    "What is a compressor? where it is used in aircraft?",
+                    "What is RAT? Have you heard about it or Do you know when it’s needed?"
+                ]
+            }
+        ];
+
+        let currentModuleIndex = null;
+
+        // --- SIMULATION VARIABLES ---
+        let simQuestions = [];
+        let currentSimIndex = 0;
+        let simTimerInterval = null;
+        let simTimeLeft = 120; // 2 minutes
+        let simAnswers = [];
+        let speechRecognition = null;
+        let isRecording = false;
+
+        // --- CORE FUNCTIONS ---
+
+        function init() {
+            renderDashboard();
+            updateGlobalProgress();
+            setupSpeechRecognition();
+        }
+
+        // 1. RENDER DASHBOARD
+        function renderDashboard() {
+            const grid = document.getElementById('module-grid');
+            grid.innerHTML = modules.map((mod, index) => {
+                const stats = getModuleStats(mod.id, mod.questions);
+                return `
+                <div onclick="openModule(${index})" class="bg-gray-900 border border-gray-800 rounded-2xl p-6 cursor-pointer hover:border-gray-600 hover:bg-gray-800/50 transition-all duration-300 group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${mod.color} opacity-5 rounded-full -mr-10 -mt-10 group-hover:opacity-10 transition-opacity"></div>
+                    
+                    <div class="flex items-start justify-between mb-4 relative z-10">
+                        <span class="text-4xl filter drop-shadow-lg">${mod.icon}</span>
+                        <span class="text-xs font-bold px-2 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 group-hover:bg-gray-700">${stats.completed}/${stats.total} Soru</span>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors relative z-10">${mod.title}</h3>
+                    <p class="text-gray-400 text-sm mb-6 relative z-10 h-10 overflow-hidden text-ellipsis">${mod.description}</p>
+                    
+                    <!-- Mini Progress Bar on Card -->
+                    <div class="w-full bg-gray-800 rounded-full h-1.5 relative z-10">
+                        <div class="h-1.5 rounded-full bg-gradient-to-r ${mod.color} transition-all duration-500" style="width: ${stats.percent}%"></div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // 2. OPEN MODULE
+        function openModule(index) {
+            currentModuleIndex = index;
+            const mod = modules[index];
+
+            toggleView('module-view');
+
+            // Set Headers
+            document.getElementById('module-title').innerText = mod.title;
+            document.getElementById('module-desc').innerText = mod.description;
+
+            // Render Questions
+            const qList = document.getElementById('questions-list');
+            qList.innerHTML = mod.questions.map((q, qIndex) => {
+                const storageKey = `${mod.id}_q${qIndex}`;
+                const savedVal = localStorage.getItem(storageKey) || "";
+
+                return `
+                <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-colors">
+                    <label class="block text-lg font-medium text-gray-200 mb-4 flex items-start gap-3">
+                        <span class="bg-gray-800 text-gray-400 text-xs font-bold px-2 py-1 rounded mt-1 shrink-0">#${qIndex + 1}</span>
+                        <span>${q}</span>
+                    </label>
+                    <div class="relative">
+                        <textarea 
+                            id="${storageKey}"
+                            rows="4" 
+                            class="w-full bg-gray-950 text-gray-200 border border-gray-700 rounded-lg p-4 focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all resize-y placeholder-gray-700 text-base"
+                            placeholder="Bu soruya cevabınızı buraya yazın..."
+                            oninput="saveAnswer('${storageKey}')"
+                        >${savedVal}</textarea>
+                        <div id="status-${storageKey}" class="absolute bottom-3 right-3 text-xs text-green-500 font-bold opacity-0 transition-opacity pointer-events-none">
+                            KAYDEDİLDİ
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            updateModuleProgress();
+        }
+
+        function showDashboard() {
+            stopSimulation(); // Stop if navigating away
+            toggleView('dashboard-view');
+            renderDashboard();
+            updateGlobalProgress();
+        }
+
+        function toggleView(viewId) {
+            // Hide all views
+            ['dashboard-view', 'module-view', 'simulation-view', 'simulation-result'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            // Show requested view
+            document.getElementById(viewId).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // --- SIMULATION LOGIC ---
+
+        function startSimulation() {
+            // 1. Collect all questions
+            let pool = [];
+            modules.forEach(mod => {
+                mod.questions.forEach(q => pool.push(q));
+            });
+
+            // 2. Shuffle and Pick 10
+            simQuestions = pool.sort(() => 0.5 - Math.random()).slice(0, 10);
+            simAnswers = new Array(10).fill("");
+            currentSimIndex = 0;
+
+            // 3. UI Setup
+            toggleView('simulation-view');
+
+            // 4. Start Q1
+            loadSimQuestion();
+        }
+
+        function loadSimQuestion() {
+            // Reset Timer
+            stopTimer();
+            simTimeLeft = 120; // 2 minutes
+            updateTimerDisplay();
+
+            // UI Updates
+            document.getElementById('sim-q-num').innerText = currentSimIndex + 1;
+            document.getElementById('sim-answer-area').value = simAnswers[currentSimIndex];
+            document.getElementById('sim-status').innerText = "Mülakatör soruyu okuyor...";
+
+            // Reset Question Visibility
+            document.getElementById('sim-question-placeholder').classList.remove('hidden');
+            document.getElementById('sim-question-text').classList.add('hidden');
+
+            // Text to Speech
+            const questionText = simQuestions[currentSimIndex];
+            speakQuestion(questionText);
+        }
+
+        function revealQuestion() {
+            const questionText = simQuestions[currentSimIndex];
+            const textEl = document.getElementById('sim-question-text');
+            const placeholderEl = document.getElementById('sim-question-placeholder');
+
+            textEl.innerText = questionText;
+            textEl.classList.remove('hidden');
+            placeholderEl.classList.add('hidden');
+        }
+
+        function speakQuestion(text) {
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+
+                // UI Animation
+                document.getElementById('interviewer-speaking-ring').classList.remove('hidden');
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US'; // Aviation language is English
+                utterance.rate = 0.9; // Slightly slower for clarity
+
+                utterance.onend = function () {
+                    document.getElementById('interviewer-speaking-ring').classList.add('hidden');
+                    document.getElementById('sim-status').innerText = "Cevabınızı bekliyor...";
+                    startTimer();
+                };
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Tarayıcınız sesli okuma özelliğini desteklemiyor.");
+                startTimer();
+            }
+        }
+
+        function replayQuestion() {
+            const questionText = simQuestions[currentSimIndex];
+            speakQuestion(questionText);
+        }
+
+        function startTimer() {
+            stopTimer();
+            simTimerInterval = setInterval(() => {
+                simTimeLeft--;
+                updateTimerDisplay();
+                if (simTimeLeft <= 0) {
+                    stopTimer();
+                    // Optional: Auto submit or visual alert
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (simTimerInterval) clearInterval(simTimerInterval);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(simTimeLeft / 60).toString().padStart(2, '0');
+            const s = (simTimeLeft % 60).toString().padStart(2, '0');
+            const el = document.getElementById('sim-timer');
+            el.innerText = `${m}:${s}`;
+
+            if (simTimeLeft < 30) {
+                el.classList.add('text-red-500');
+                el.classList.remove('text-indigo-400');
+            } else {
+                el.classList.add('text-indigo-400');
+                el.classList.remove('text-red-500');
+            }
+        }
+
+        function setupSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                speechRecognition = new SpeechRecognition();
+                speechRecognition.continuous = true;
+                speechRecognition.interimResults = true;
+                speechRecognition.lang = 'en-US'; // English interview
+
+                speechRecognition.onstart = function () {
+                    isRecording = true;
+                    document.getElementById('mic-btn').classList.add('bg-red-600', 'text-white');
+                    document.getElementById('listening-indicator').classList.remove('hidden');
+                };
+
+                speechRecognition.onend = function () {
+                    isRecording = false;
+                    document.getElementById('mic-btn').classList.remove('bg-red-600', 'text-white');
+                    document.getElementById('listening-indicator').classList.add('hidden');
+                };
+
+                speechRecognition.onresult = function (event) {
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+
+                    const textArea = document.getElementById('sim-answer-area');
+                    // Append only final results carefully or handle logic to not duplicate
+                    // Simple approach: Replace cursor handling is complex, so let's just append to end for simplicity in demo
+                    if (finalTranscript) {
+                        textArea.value = (textArea.value + " " + finalTranscript).trim();
+                    }
+                };
+            }
+        }
+
+        function toggleRecording() {
+            if (!speechRecognition) {
+                alert("Tarayıcınız sesli yazma özelliğini desteklemiyor (Chrome önerilir).");
+                return;
+            }
+            if (isRecording) {
+                speechRecognition.stop();
+            } else {
+                speechRecognition.start();
+            }
+        }
+
+        function submitSimAnswer() {
+            // Save current answer
+            simAnswers[currentSimIndex] = document.getElementById('sim-answer-area').value;
+
+            // Stop recording if active
+            if (isRecording && speechRecognition) speechRecognition.stop();
+            stopTimer();
+
+            // Next or Finish
+            if (currentSimIndex < 9) {
+                currentSimIndex++;
+                loadSimQuestion();
+            } else {
+                finishSimulation();
+            }
+        }
+
+        function quitSimulation() {
+            if (confirm("Simülasyonu iptal etmek istiyor musunuz?")) {
+                stopSimulation();
+                showDashboard();
+            }
+        }
+
+        function stopSimulation() {
+            stopTimer();
+            window.speechSynthesis.cancel();
+            if (isRecording && speechRecognition) speechRecognition.stop();
+        }
+
+        function finishSimulation() {
+            toggleView('simulation-result');
+            const container = document.getElementById('sim-report-container');
+
+            container.innerHTML = simQuestions.map((q, idx) => `
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+                    <h4 class="text-indigo-400 font-bold text-sm mb-2">SORU ${idx + 1}</h4>
+                    <p class="text-white text-lg font-medium mb-4 border-b border-gray-800 pb-4">${q}</p>
+                    <h4 class="text-gray-500 font-bold text-xs mb-2">CEVABINIZ:</h4>
+                    <p class="text-gray-300 italic whitespace-pre-wrap">${simAnswers[idx] || '<span class="text-red-900">Cevap verilmedi.</span>'}</p>
+                </div>
+            `).join('');
+        }
+
+        // --- COMMON FUNCTIONS ---
+        function saveAnswer(key) {
+            const val = document.getElementById(key).value;
+            localStorage.setItem(key, val);
+            const indicator = document.getElementById(`status-${key}`);
+            indicator.style.opacity = '1';
+            setTimeout(() => { indicator.style.opacity = '0'; }, 1000);
+            updateModuleProgress();
+        }
+
+        function getModuleStats(modId, questions) {
+            let completed = 0;
+            questions.forEach((_, idx) => {
+                const val = localStorage.getItem(`${modId}_q${idx}`);
+                if (val && val.trim().length > 2) completed++;
+            });
+            return {
+                total: questions.length,
+                completed: completed,
+                percent: Math.round((completed / questions.length) * 100)
+            };
+        }
+
+        function updateModuleProgress() {
+            if (currentModuleIndex === null) return;
+            const mod = modules[currentModuleIndex];
+            const stats = getModuleStats(mod.id, mod.questions);
+            document.getElementById('module-progress-bar').style.width = `${stats.percent}%`;
+            document.getElementById('module-progress-text').innerText = `${stats.percent}%`;
+        }
+
+        function updateGlobalProgress() {
+            let totalQ = 0;
+            let totalA = 0;
+            modules.forEach(mod => {
+                const stats = getModuleStats(mod.id, mod.questions);
+                totalQ += stats.total;
+                totalA += stats.completed;
+            });
+            const percent = totalQ === 0 ? 0 : Math.round((totalA / totalQ) * 100);
+            document.getElementById('global-progress').innerText = `${percent}%`;
+        }
+
+        function clearAllData() {
+            if (confirm("DİKKAT: Tüm cevaplarınız silinecek. Emin misiniz?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function downloadAnswers() {
+            // Create a container for the PDF content
+            const element = document.createElement('div');
+            // Inline styles are best for html2pdf to ensure consistent rendering
+            element.innerHTML = `
+                <div style="font-family: 'Inter', sans-serif; padding: 40px; color: #111; background: #fff;">
+                    <h1 style="text-align: center; font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px;">
+                        Mülakat Hazırlık Raporu
+                    </h1>
+                    
+                    <p style="text-align: right; color: #666; font-size: 12px; margin-bottom: 40px;">
+                        Tarih: ${new Date().toLocaleDateString("tr-TR", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    </p>
+                    
+                    ${modules.map(mod => `
+                        <div style="margin-bottom: 40px; page-break-inside: avoid;">
+                            <h2 style="background-color: #f3f4f6; padding: 12px 15px; border-left: 6px solid #4f46e5; color: #111827; font-size: 18px; font-weight: bold; margin-bottom: 20px; border-radius: 4px;">
+                                ${mod.title}
+                            </h2>
+                            ${mod.questions.map((q, idx) => {
+                const val = localStorage.getItem(`${mod.id}_q${idx}`) || "Cevaplanmadı";
+                return `
+                                    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
+                                        <p style="font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #000;">
+                                            ${idx + 1}. ${q}
+                                        </p>
+                                        <p style="font-size: 13px; color: #374151; white-space: pre-wrap; line-height: 1.5; margin-top: 0;">
+                                            ${val}
+                                        </p>
+                                    </div>
+                                `;
+            }).join('')}
+                        </div>
+                    `).join('')}
+                    
+                    <div style="margin-top: 60px; text-align: center; font-size: 10px; color: #9ca3af; border-top: 1px solid #eee; padding-top: 20px;">
+                        MülakatPro Platformu tarafından oluşturulmuştur.
+                    </div>
+                </div>
+            `;
+
+            // Options for html2pdf
+            const opt = {
+                margin: [10, 10, 10, 10], // top, left, bottom, right
+                filename: 'mulakat-hazirlik-raporu.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Generate and save
+            html2pdf().set(opt).from(element).save();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+
+</html>

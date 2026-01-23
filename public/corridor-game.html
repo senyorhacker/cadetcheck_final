@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Görsel-İşitsel Bellek Testi</title>
+    <link rel="stylesheet" href="platform.css">
+    <link rel="stylesheet" href="corridor-game.css">
+    <!-- ResponsiveVoice for TTS -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=yGrKbp6K"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="level-header">
+        <div class="container">
+            <a href="level-select-corridor.html?game=corridor-memory" class="back-button">
+                <span>← Seviyeler</span>
+            </a>
+            <h1 class="game-title">Görsel-İşitsel Bellek Testi</h1>
+            <div class="nav-buttons">
+                <a href="level-select-corridor.html" class="nav-btn" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+                    Seviyeler
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Game Main -->
+    <main class="corridor-main">
+        <div class="container">
+            <!-- Game Info -->
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="info-label">Level</span>
+                    <span class="info-value" id="currentLevel">1</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Soru</span>
+                    <span class="info-value"><span id="currentQuestion">1</span>/10</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Doğru</span>
+                    <span class="info-value correct-text" id="correctCount">0</span>
+                </div>
+            </div>
+
+            <!-- Display Phase: Corridors -->
+            <div class="phase-container" id="displayPhase">
+                <div class="airport-container">
+                    <div class="airport-header">
+                        <div class="airport-icon">🏛️</div>
+                        <div class="airport-name">Istanbul</div>
+                    </div>
+                    <div class="corridors-display" id="corridorsDisplay">
+                        <!-- Corridors will be generated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio Phase -->
+            <div class="phase-container hidden" id="audioPhase">
+                <div class="audio-display">
+                    <div class="speaker-icon">🔊</div>
+                    <div class="audio-text" id="audioText">Listening...</div>
+                </div>
+            </div>
+
+            <!-- Answer Phase: City Selection -->
+            <div class="phase-container hidden" id="answerPhase">
+                <div class="answer-header">
+                    <h3>Select cities on open corridors:</h3>
+                </div>
+                <div class="cities-grid" id="citiesGrid">
+                    <!-- City checkboxes will be generated here -->
+                </div>
+                <button class="submit-button" id="submitBtn">✓ Submit Answer</button>
+            </div>
+
+            <!-- Comparison Phase -->
+            <div class="phase-container hidden" id="comparisonPhase">
+                <div class="comparison-container">
+                    <div class="comparison-section">
+                        <h3 class="comparison-title correct-title">Doğru Cevap:</h3>
+                        <div class="city-list correct-list" id="correctCitiesList">
+                            <!-- Correct cities will be shown here -->
+                        </div>
+                    </div>
+                    <div class="comparison-section">
+                        <h3 class="comparison-title user-title">Cevabınız:</h3>
+                        <div class="city-list user-list" id="userCitiesList">
+                            <!-- User's cities will be shown here -->
+                        </div>
+                    </div>
+                    <div class="result-display" id="resultDisplay">
+                        <!-- Result icon and text -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Score Modal -->
+    <div class="modal hidden" id="scoreModal">
+        <div class="modal-content">
+            <h2>Level <span id="scoreLevel">1</span> Tamamlandı!</h2>
+
+            <div class="score-grid">
+                <div class="score-item">
+                    <div class="score-label">Doğru</div>
+                    <div class="score-value correct" id="modalCorrect">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Yanlış</div>
+                    <div class="score-value incorrect" id="modalIncorrect">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Başarı Oranı</div>
+                    <div class="score-value" id="modalSuccess">0%</div>
+                </div>
+            </div>
+
+            <div class="score-buttons">
+                <button class="action-button" id="nextLevelButton">Sonraki Level</button>
+                <button class="action-button" id="retryButton">Tekrar Dene</button>
+                <button class="action-button secondary" id="backToLevelsButton">Seviye Seçimi</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="corridor-game.js"></script>
+</body>
+
+</html>

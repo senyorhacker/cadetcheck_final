@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CadetCheck - THY Cadet Pilot Psikometrik Test Platformu</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="landing-style.css">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-plane">✈️</div>
+        <div class="loading-text">CadetCheck</div>
+        <div class="loading-dots">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
+    </div>
+
+    <div class="bg-animation"></div>
+    <canvas id="stars-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">CadetCheck</div>
+            <ul class="nav-links">
+                <li><a href="#home">Ana Sayfa</a></li>
+                <li><a href="#tests">Testler</a></li>
+                <li><a href="#features">Özellikler</a></li>
+                <li><a href="#testimonials">Yorumlar</a></li>
+                <li><a href="#faq">SSS</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline" style="text-decoration: none;">Giriş Yap</a>
+                <a href="signup.html" class="btn btn-primary" style="text-decoration: none;">Kayıt Ol</a>
+            </div>
+            <div class="hamburger" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="#home" onclick="closeMobileMenu()">Ana Sayfa</a></li>
+            <li><a href="#tests" onclick="closeMobileMenu()">Testler</a></li>
+            <li><a href="#features" onclick="closeMobileMenu()">Özellikler</a></li>
+            <li><a href="#testimonials" onclick="closeMobileMenu()">Yorumlar</a></li>
+            <li><a href="#faq" onclick="closeMobileMenu()">SSS</a></li>
+        </ul>
+        <div class="mobile-menu-buttons">
+            <a href="login.html" class="btn btn-outline" style="text-decoration: none;"
+                onclick="closeMobileMenu()">Giriş Yap</a>
+            <a href="signup.html" class="btn btn-primary" style="text-decoration: none;"
+                onclick="closeMobileMenu()">Kayıt Ol</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>GÖKYÜZÜNDEKİ YERİNİZİ ALIN</h1>
+            <h2>THY Cadet Pilot Seçim Sürecine Hazırlık</h2>
+            <p>THY Cadet Pilot adayları için özel hazırlanmış psikometrik test platformu. Dikkat, bellek ve bilişsel
+                yeteneklerinizi ölçün, geliştirin ve hayalinize ulaşın.</p>
+            <div class="hero-cta">
+                <button class="btn btn-hero" onclick="scrollToSection('tests')">Testlere Başla →</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tests Section -->
+    <section class="tests-section" id="tests">
+        <div class="section-title">
+            <h2>Psikometrik Test Paketleri</h2>
+            <p>THY standartlarında profesyonel değerlendirme</p>
+        </div>
+        <div class="tests-grid">
+            <div class="test-card purple">
+                <div class="test-icon">👁️</div>
+                <h3>Dikkat Testi</h3>
+                <p>Görsel uyaranları hızlı ve doğru bir şekilde ayırt etme yeteneğinizi ölçer. Sürekli dikkat gerektiren
+                    görevlerde performansınızı değerlendirir.</p>
+                <a href="level-select.html?game=sustained-attention" class="btn btn-primary">Teste Git →</a>
+            </div>
+
+            <div class="test-card pink">
+                <div class="test-icon">🔢</div>
+                <h3>Sözel Bellek Testi</h3>
+                <p>Kısa süreli bellek kapasitesini ve sayısal bilgi işleme becerinizi test eder. Rakamları hatırlama ve
+                    doğru sıralama yeteneğinizi ölçer.</p>
+                <a href="level-select-memory.html?game=verbal-memory" class="btn btn-primary">Teste Git →</a>
+            </div>
+
+            <div class="test-card blue">
+                <div class="test-icon">🏙️</div>
+                <h3>Mekansal Bellek Testi</h3>
+                <p>Görsel-mekansal bellek ve işitsel bilgi işleme becerilerinizi birlikte değerlendirir. Şehir
+                    isimlerini hatırlama ve konumlandırma yeteneğinizi test eder.</p>
+                <a href="level-select-corridor.html?game=corridor-memory" class="btn btn-primary">Teste Git →</a>
+            </div>
+
+            <div class="test-card green">
+                <div class="test-icon">🧠</div>
+                <h3>Bilişsel Çeviklik Testi</h3>
+                <p>Zihinsel esneklik ve kural değiştirme kapasitesini ölçer. Hızlı karar verme ve farklı kurallara
+                    adaptasyon yeteneğinizi değerlendirir.</p>
+                <a href="level-select-cognition.html?game=cognition-flexibility" class="btn btn-primary">Teste Git →</a>
+            </div>
+
+            <div class="test-card gold">
+                <div class="test-icon">⚛️</div>
+                <h3>Fizik Testi</h3>
+                <p>Hareket, Kuvvet, Enerji ve Dalgalar - THY PACE Test Hazırlığı. 100 konu bazlı soru ve 4
+                    kapsamlı deneme sınavı.</p>
+                <a href="physics-quiz.html" class="btn btn-primary">Teste Git →</a>
+            </div>
+
+            <div class="test-card indigo">
+                <div class="test-icon">🎙️</div>
+                <h3>Mülakat Hazırlık</h3>
+                <p>THY mülakat süreçlerine özel, sesli simülasyon ve geniş soru havuzu. Gerçekçi mülakat deneyimi ile
+                    kendinizi test edin.</p>
+                <a href="interview.html" class="btn btn-primary">Teste Git →</a>
+            </div>
+
+            <div class="test-card orange">
+                <div class="test-icon">🧮</div>
+                <h3>Matematik Testi</h3>
+                <p>Yaş Problemleri, Yol/Hız, Yüzdeler ve İşçi/Zaman problemleri. Sayısal mantık bölümüne
+                    hazırlanın.</p>
+                <a href="math-quiz.html" class="btn btn-primary">Teste Git →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="section-title">
+            <h2>Platform Özellikleri</h2>
+            <p></p>
+        </div>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3>Kişisel Dashboard</h3>
+                <p>Tüm test sonuçlarınızı ve ilerlemenizi tek bir panelden takip edin</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📈</div>
+                <h3>Detaylı İstatistikler</h3>
+                <p>Grafikler ve analizlerle güçlü ve zayıf yönlerinizi keşfedin</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⏱️</div>
+                <h3>Zamanlama Analizi</h3>
+                <p>Reaksiyon sürelerinizi ve hız gelişiminizi izleyin</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <h3>Hedef Takibi</h3>
+                <p>Belirlediğiniz hedeflere ulaşma sürecinizi gözlemleyin</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🏆</div>
+                <h3>Başarı Rozetleri</h3>
+                <p>Yeni seviyeler açın ve başarılarınızı kutlayın</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <h3>Mobil Uyumlu</h3>
+                <p>Tüm cihazlardan sorunsuz erişim sağlayın</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section" id="testimonials">
+        <div class="section-title">
+            <h2>Pilotların Yorumları</h2>
+            <p></p>
+        </div>
+        <div class="testimonials-container">
+            <div class="testimonial-wrapper">
+                <div class="testimonial active">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">AY</div>
+                        <div class="testimonial-info">
+                            <h4>Ahmet Yılmaz</h4>
+                            <p>THY Cadet Pilot 2024</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"CadetCheck sayesinde THY psikometrik testlerine çok daha hazırlıklı
+                        girdim. Özellikle dikkat testleri gerçeğine çok benziyordu. Kesinlikle tavsiye ederim!"</p>
+                </div>
+
+                <div class="testimonial">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">EK</div>
+                        <div class="testimonial-info">
+                            <h4>Elif Kaya</h4>
+                            <p>Pilot Adayı</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"İstatistikler sayesinde hangi alanlarda gelişmem gerektiğini net bir
+                        şekilde gördüm. Dashboard çok kullanışlı ve motivasyonumu artırıyor. Harika bir platform!"</p>
+                </div>
+
+                <div class="testimonial">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">MÖ</div>
+                        <div class="testimonial-info">
+                            <h4>Mehmet Özdemir</h4>
+                            <p>THY Cadet Pilot 2023</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Gerçek sınav ortamını en iyi yansıtan platform. Bilişsel çeviklik
+                        testleri benim en zayıf olduğum yerdi, CadetCheck'te çok pratik yaptım ve geliştim."</p>
+                </div>
+
+                <div class="testimonial">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">ZA</div>
+                        <div class="testimonial-info">
+                            <h4>Zeynep Arslan</h4>
+                            <p>Pilot Adayı</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Mekansal bellek testleri harika! Telefondan bile rahatlıkla
+                        çalışabiliyorum. Arayüz çok şık ve kullanımı kolay. Her gün düzenli çalışıyorum."</p>
+                </div>
+
+                <div class="testimonial">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">BT</div>
+                        <div class="testimonial-info">
+                            <h4>Burak Tekin</h4>
+                            <p>THY Cadet Pilot 2024</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Platform sayesinde kendimi çok geliştirdim. Test sonuçlarımın
+                        grafiklerini görmek çok motivasyon verici. THY sınavına hazırlanırken en çok güvendiğim kaynak!"
+                    </p>
+                </div>
+
+                <div class="testimonial">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">SD</div>
+                        <div class="testimonial-info">
+                            <h4>Selin Demir</h4>
+                            <p>Pilot Adayı</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Profesyonel ve kullanıcı dostu bir platform. Her test sonrası aldığım
+                        detaylı geri bildirimler sayesinde eksiklerimi görüp üzerinde çalışabiliyorum. Mükemmel!"</p>
+                </div>
+            </div>
+            <div class="testimonial-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq">
+        <div class="section-title">
+            <h2>Sıkça Sorulan Sorular</h2>
+            <p style="color: white;">Merak ettiğiniz her şey burada</p>
+        </div>
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question">THY psikometrik testleri nedir?</div>
+                <div class="faq-answer">
+                    <p>THY Cadet Pilot seçim sürecinde kullanılan, adayların dikkat, bellek, bilişsel esneklik gibi
+                        zihinsel yeteneklerini ölçen standartlaştırılmış testlerdir. Bu testler pilotluk için gerekli
+                        mental kapasiteyi değerlendirir.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">CadetCheck testleri gerçek THY sınavına ne kadar benziyor?</div>
+                <div class="faq-answer">
+                    <p>CadetCheck testleri, THY'nin kullandığı psikometrik test formatlarına ve zorluğuna çok yakın
+                        şekilde tasarlanmıştır. Gerçek pilot adaylarından gelen geri bildirimler doğrultusunda sürekli
+                        güncellenmektedir.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Kişisel dashboard'da neler bulunuyor?</div>
+                <div class="faq-answer">
+                    <p>Dashboard'unuzda tüm test sonuçlarınızı, zaman içindeki gelişiminizi gösteren grafikler, güçlü ve
+                        zayıf yönlerinizin analizi, ortalama reaksiyon süreleriniz ve başarı rozetleriniz yer alır.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Testleri kaç kez tekrarlayabilirim?</div>
+                <div class="faq-answer">
+                    <p>Testleri sınırsız sayıda tekrarlayabilirsiniz. Her test için yeni varyasyonlar sunulmakta ve
+                        böylece ezberleme riski ortadan kalkmaktadır. İstatistikleriniz her testte güncellenir.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Mobil cihazlardan kullanabilir miyim?</div>
+                <div class="faq-answer">
+                    <p>Evet, CadetCheck tamamen responsive tasarlanmıştır. Telefon, tablet veya bilgisayardan sorunsuz
+                        şekilde testlere erişebilir ve çalışabilirsiniz.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>CadetCheck</h3>
+                <p>Türk Hava Yolları Cadet Pilot adayları için tasarlanmış profesyonel psikometrik test platformu.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hızlı Linkler</h3>
+                <ul>
+                    <li><a href="#home">Ana Sayfa</a></li>
+                    <li><a href="#tests">Testler</a></li>
+                    <li><a href="#features">Özellikler</a></li>
+                    <li><a href="#faq">SSS</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Destek</h3>
+                <ul>
+                    <li><a href="contact.html">İletişim</a></li>
+                    <li><a href="manual.html">Kullanım Kılavuzu</a></li>
+                    <li><a href="privacy-policy.html">Gizlilik Politikası</a></li>
+                    <li><a href="terms.html">Kullanım Koşulları</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>İletişim</h3>
+                <ul>
+                    <li><a href="mailto:cadetcheck@gmail.com">cadetcheck@gmail.com</a></li>
+                    <li><a href="#">Şişli / İstanbul</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 CadetCheck - Psikometrik Test Platformu. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchTab('login')">Giriş Yap</button>
+                <button class="modal-tab" onclick="switchTab('register')">Kayıt Ol</button>
+            </div>
+
+            <div class="tab-content active" id="login-tab">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>E-posta</label>
+                        <input type="email" required placeholder="ornek@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Şifre</label>
+                        <input type="password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="form-submit">Giriş Yap</button>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <a href="#" style="color: var(--accent-purple); text-decoration: none;"
+                            onclick="switchTab('admin')">Admin Girişi →</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="tab-content" id="register-tab">
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Ad Soyad</label>
+                        <input type="text" required placeholder="Adınız Soyadınız">
+                    </div>
+                    <div class="form-group">
+                        <label>E-posta</label>
+                        <input type="email" required placeholder="ornek@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Şifre</label>
+                        <input type="password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="form-submit">Kayıt Ol</button>
+                </form>
+            </div>
+
+            <div class="tab-content" id="admin-tab">
+                <form onsubmit="handleAdminLogin(event)">
+                    <div class="form-group">
+                        <label>Admin E-posta</label>
+                        <input type="email" required placeholder="admin@cadetcheck.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Admin Şifre</label>
+                        <input type="password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="form-submit">Admin Girişi</button>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <a href="#" style="color: var(--accent-purple); text-decoration: none;"
+                            onclick="switchTab('login')">← Kullanıcı Girişi</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to top button -->
+    <div class="scroll-top" id="scrollTop" onclick="scrollToTop()">
+        <span style="color: var(--white); font-size: 1.5rem;">↑</span>
+    </div>
+
+    <script src="landing-script.js"></script>
+</body>
+
+</html>

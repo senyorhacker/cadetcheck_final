@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilişsel Çeviklik Testi</title>
+    <link rel="stylesheet" href="platform.css">
+    <link rel="stylesheet" href="cognition-game.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="level-header">
+        <div class="container">
+            <a href="level-select-cognition.html?game=cognition-flexibility" class="back-button">
+                <span>← Seviyeler</span>
+            </a>
+            <h1 class="game-title">Bilişsel Çeviklik Testi</h1>
+            <div class="nav-buttons">
+                <a href="level-select-cognition.html" class="nav-btn"
+                    style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+                    Seviyeler
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Game Main -->
+    <main class="cognition-main">
+        <div class="container">
+            <!-- Game Info -->
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="info-label">Level</span>
+                    <span class="info-value" id="currentLevel">1</span>
+                </div>
+                <div class="info-item" style="display: none;">
+                    <span class="info-label">Trial</span>
+                    <span class="info-value"><span id="currentTrial">1</span>/15</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Score</span>
+                    <span class="info-value correct-text" id="scoreCount">0</span>
+                </div>
+            </div>
+
+            <!-- Transition Screen -->
+            <div class="phase-screen" id="transitionScreen">
+                <div class="transition-content">
+                    <h2 id="transitionTitle">LEVEL 1</h2>
+                    <div class="rule-display" id="transitionRule">
+                        <!-- Rule details -->
+                    </div>
+                    <div class="countdown" id="countdown" style="display: none;">Starting in 3...</div>
+                </div>
+            </div>
+
+            <!-- Game Screen -->
+            <div class="phase-screen hidden" id="gameScreen">
+                <!-- Current Rule Indicator -->
+                <div class="current-rule" id="currentRuleDisplay">
+                    RULE 1
+                </div>
+
+                <!-- Reaction Area -->
+                <div class="reaction-area" id="reactionArea">
+                    <!-- Shapes will appear here -->
+                </div>
+
+                <!-- Controls Display -->
+                <div class="controls-display">
+                    <div class="control-key">↑</div>
+                    <div class="control-row">
+                        <div class="control-key">←</div>
+                        <div class="control-key">↓</div>
+                        <div class="control-key">→</div>
+                    </div>
+                </div>
+
+                <!-- Feedback Overlay -->
+                <div class="feedback-overlay hidden" id="feedbackOverlay">
+                    <div class="feedback-text" id="feedbackText"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Score Modal -->
+    <div class="modal hidden" id="scoreModal">
+        <div class="modal-content">
+            <h2>Level <span id="scoreLevel">1</span> Complete!</h2>
+
+            <div class="score-grid">
+                <div class="score-item">
+                    <div class="score-label">Correct</div>
+                    <div class="score-value correct" id="modalCorrect">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Incorrect</div>
+                    <div class="score-value incorrect" id="modalIncorrect">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Success Rate</div>
+                    <div class="score-value" id="modalSuccess">0%</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Avg Reaction</div>
+                    <div class="score-value" id="modalAvgReaction">0ms</div>
+                </div>
+            </div>
+
+            <div class="score-buttons">
+                <button class="action-button" id="nextLevelButton">Next Level</button>
+                <button class="action-button" id="retryButton">Retry</button>
+                <button class="action-button secondary" id="backToLevelsButton">Level Selection</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="cognition-game.js"></script>
+</body>
+
+</html>

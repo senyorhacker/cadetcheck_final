@@ -1,0 +1,3300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Physics Quiz - THY PACE Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Work+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e27;
+      --bg-secondary: #141937;
+      --bg-card: #1a1f3a;
+      --text-primary: #e8eaf6;
+      --text-secondary: #9fa8da;
+      --accent: #00d4aa;
+      --accent-hover: #00ffcc;
+      --correct: #4ade80;
+      --incorrect: #f87171;
+      --border: rgba(255, 255, 255, 0.1);
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Work Sans', sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, #1a0f2e 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3.5rem;
+      font-style: italic;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      font-weight: 300;
+    }
+
+    .quiz-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .quiz-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.8rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quiz-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .quiz-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+
+    .quiz-card:hover::before {
+      opacity: 0.05;
+    }
+
+    .quiz-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .quiz-card-info {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .question-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.4s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .question-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--accent);
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+      font-weight: 500;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .option {
+      background: var(--bg-secondary);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .option:hover {
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .option:hover::before {
+      transform: scaleY(1);
+    }
+
+    .option.selected {
+      border-color: var(--accent);
+      background: rgba(0, 212, 170, 0.1);
+    }
+
+    .option.selected::before {
+      transform: scaleY(1);
+    }
+
+    .option.correct {
+      border-color: var(--correct);
+      background: rgba(74, 222, 128, 0.1);
+    }
+
+    .option.incorrect {
+      border-color: var(--incorrect);
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    .option.disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 1rem 2.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-family: 'Work Sans', sans-serif;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: var(--bg-primary);
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 30px rgba(0, 212, 170, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 2px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      background: rgba(0, 212, 170, 0.1);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .results {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.4s ease-out;
+    }
+
+    .results-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+    }
+
+    .score {
+      font-size: 4rem;
+      font-weight: 700;
+      margin: 2rem 0;
+      color: var(--accent);
+      text-align: center;
+    }
+
+    .score-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .score-item {
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .score-item-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .score-item-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .correct-value {
+      color: var(--correct);
+    }
+
+    .incorrect-value {
+      color: var(--incorrect);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
+      transition: width 0.5s ease;
+      border-radius: 10px;
+    }
+
+    .answer-review {
+      margin-top: 2rem;
+    }
+
+    .review-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+    }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .review-item {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid var(--border);
+      background: var(--bg-secondary);
+    }
+
+    .review-item:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .review-item.correct {
+      background: rgba(74, 222, 128, 0.2);
+      border-color: var(--correct);
+      color: var(--correct);
+    }
+
+    .review-item.incorrect {
+      background: rgba(248, 113, 113, 0.2);
+      border-color: var(--incorrect);
+      color: var(--incorrect);
+    }
+
+    .review-item.unanswered {
+      background: rgba(159, 168, 218, 0.1);
+      border-color: var(--text-secondary);
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1.5rem 1rem;
+      }
+
+      .logo {
+        font-size: 2.5rem;
+      }
+
+      .question-container {
+        padding: 1.5rem;
+      }
+
+      .quiz-selector {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .review-grid {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div style="margin-bottom: 1rem;">
+      <a href="index.html"
+        style="color: var(--accent); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; width: fit-content; padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-card); transition: all 0.2s ease;">
+        <span>←</span> Ana Sayfa
+      </a>
+    </div>
+    <div class="header">
+      <h1 class="logo">Physics Quiz</h1>
+      <p class="subtitle">THY PACE Test Preparation</p>
+    </div>
+
+    <div id="app"></div>
+  </div>
+
+  <script>
+    const quizData = {
+      "temel_sorular": {
+        "title": "PHYSICS – MOTION (10 Multiple Choice Questions)",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Which of the following best defines motion in physics?",
+            "options": [
+              "A) The ability of an object to exert force",
+              "B) A change in position relative to a reference point over time",
+              "C) The mass of an object multiplied by its velocity",
+              "D) The resistance of an object to movement"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 2,
+            "question": "Which physical quantity describes how fast an object moves in a given direction?",
+            "options": [
+              "A) Speed",
+              "B) Distance",
+              "C) Velocity",
+              "D) Displacement"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 3,
+            "question": "Which of the following quantities is a vector quantity?",
+            "options": [
+              "A) Distance",
+              "B) Speed",
+              "C) Time",
+              "D) Displacement"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 4,
+            "question": "What is the SI unit of speed?",
+            "options": [
+              "A) Meter (m)",
+              "B) Meter per second (m/s)",
+              "C) Second (s)",
+              "D) Kilometer (km)"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 5,
+            "question": "Which of the following best defines acceleration?",
+            "options": [
+              "A) Change in position over time",
+              "B) Total distance traveled",
+              "C) Change in velocity per unit time",
+              "D) Velocity multiplied by time"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 6,
+            "question": "Which of the following quantities can be zero even if the object has moved?",
+            "options": [
+              "A) Speed",
+              "B) Distance",
+              "C) Displacement",
+              "D) Time"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 7,
+            "question": "What does a straight horizontal line on a distance–time graph represent?",
+            "options": [
+              "A) Constant acceleration",
+              "B) Increasing speed",
+              "C) Object at rest",
+              "D) Uniform motion"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 8,
+            "question": "Which formula correctly represents average speed?",
+            "options": [
+              "A) Total displacement ÷ total time",
+              "B) Change in velocity ÷ time",
+              "C) Total distance ÷ total time",
+              "D) Velocity × time"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 9,
+            "question": "Which statement about uniform motion is correct?",
+            "options": [
+              "A) Acceleration is changing",
+              "B) Velocity is constant",
+              "C) Speed decreases with time",
+              "D) Direction always changes"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 10,
+            "question": "Which of the following is not a kinematic quantity?",
+            "options": [
+              "A) Distance",
+              "B) Velocity",
+              "C) Force",
+              "D) Acceleration"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 11,
+            "question": "Newton’s First Law of Motion is also known as the law of:",
+            "options": [
+              "A) Acceleration",
+              "B) Momentum",
+              "C) Inertia",
+              "D) Gravitation"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 12,
+            "question": "According to Newton’s First Law, an object at rest will remain at rest unless:",
+            "options": [
+              "A) Its mass changes",
+              "B) A net external force acts on it",
+              "C) Its velocity increases",
+              "D) Gravity is removed"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 13,
+            "question": "Which quantity is described as the resistance of an object to changes in its motion?",
+            "options": [
+              "A) Force",
+              "B) Speed",
+              "C) Inertia",
+              "D) Acceleration"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 14,
+            "question": "Which formula correctly represents Newton’s Second Law of Motion?",
+            "options": [
+              "A) ",
+              "B) ",
+              "C) ",
+              "D) "
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 15,
+            "question": "What is the SI unit of force?",
+            "options": [
+              "A) Joule (J)",
+              "B) Watt (W)",
+              "C) Newton (N)",
+              "D) Pascal (Pa)"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 16,
+            "question": "According to Newton’s Second Law, if the net force on an object is zero, the object:",
+            "options": [
+              "A) Must be at rest",
+              "B) Must be accelerating",
+              "C) Moves with constant velocity or remains at rest",
+              "D) Gains mass"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 17,
+            "question": "Newton’s Third Law of Motion states that:",
+            "options": [
+              "A) Force equals mass times acceleration",
+              "B) Every action has an equal and opposite reaction",
+              "C) Objects resist changes in motion",
+              "D) Net force is always zero"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 18,
+            "question": "Which pair of forces represents an action–reaction pair?",
+            "options": [
+              "A) Weight and normal force on the same object",
+              "B) Friction and applied force on the same object",
+              "C) Earth pulling an object and the object pulling Earth",
+              "D) Net force and acceleration"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 19,
+            "question": "Action and reaction forces act:",
+            "options": [
+              "A) On the same object",
+              "B) In the same direction",
+              "C) On different objects",
+              "D) At different times"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 20,
+            "question": "Which quantity determines how much an object accelerates under a given force?",
+            "options": [
+              "A) Speed",
+              "B) Mass",
+              "C) Distance",
+              "D) Time"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 21,
+            "question": "In physics, work is done when a force:",
+            "options": [
+              "A) Is applied to an object at rest",
+              "B) Causes displacement in the direction of the force",
+              "C) Acts perpendicular to motion",
+              "D) Changes the mass of an object"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 22,
+            "question": "Which formula correctly defines work?",
+            "options": [
+              "A) ",
+              "B) ",
+              "C) ",
+              "D) "
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 23,
+            "question": "What is the SI unit of work?",
+            "options": [
+              "A) Newton (N)",
+              "B) Watt (W)",
+              "C) Joule (J)",
+              "D) Pascal (Pa)"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 24,
+            "question": "Which type of energy is associated with motion?",
+            "options": [
+              "A) Potential energy",
+              "B) Thermal energy",
+              "C) Chemical energy",
+              "D) Kinetic energy"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 25,
+            "question": "Which formula represents kinetic energy?",
+            "options": [
+              "A) ",
+              "B) ",
+              "C) ",
+              "D) "
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 26,
+            "question": "What does potential energy depend on?",
+            "options": [
+              "A) Speed and time",
+              "B) Force and distance",
+              "C) Position or configuration",
+              "D) Power and acceleration"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 27,
+            "question": "Which quantity describes the rate at which work is done?",
+            "options": [
+              "A) Energy",
+              "B) Force",
+              "C) Power",
+              "D) Momentum"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 28,
+            "question": "What is the SI unit of power?",
+            "options": [
+              "A) Joule (J)",
+              "B) Newton (N)",
+              "C) Watt (W)",
+              "D) Kilogram (kg)"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 29,
+            "question": "Which statement about energy is correct?",
+            "options": [
+              "A) Energy is created when work is done",
+              "B) Energy can be destroyed",
+              "C) Energy is the ability to do work",
+              "D) Energy has no units"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 30,
+            "question": "Which law states that energy cannot be created or destroyed, only transformed?",
+            "options": [
+              "A) Newton’s First Law",
+              "B) Law of Conservation of Energy",
+              "C) Ohm’s Law",
+              "D) Bernoulli’s Principle"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 31,
+            "question": "What is the correct definition of pressure?",
+            "options": [
+              "A) Force multiplied by area",
+              "B) Force divided by area",
+              "C) Mass divided by volume",
+              "D) Energy per unit time"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 32,
+            "question": "Which formula represents pressure?",
+            "options": [
+              "A) ",
+              "B) ",
+              "C) ",
+              "D) "
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 33,
+            "question": "What is the SI unit of pressure?",
+            "options": [
+              "A) Newton (N)",
+              "B) Joule (J)",
+              "C) Pascal (Pa)",
+              "D) Kilogram (kg)"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 34,
+            "question": "Which quantity is defined as mass per unit volume?",
+            "options": [
+              "A) Pressure",
+              "B) Weight",
+              "C) Density",
+              "D) Force"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 35,
+            "question": "Which formula correctly represents density?",
+            "options": [
+              "A) ",
+              "B) ",
+              "C) ",
+              "D) "
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 36,
+            "question": "What is the SI unit of density?",
+            "options": [
+              "A) kg/m³",
+              "B) N/m²",
+              "C) J/kg",
+              "D) m/s"
+            ],
+            "correct": "A"
+          },
+          {
+            "id": 37,
+            "question": "Which statement about mass is correct?",
+            "options": [
+              "A) It depends on gravity",
+              "B) It is measured in newtons",
+              "C) It is the amount of matter in an object",
+              "D) It changes with location"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 38,
+            "question": "Which of the following affects pressure exerted by an object on a surface?",
+            "options": [
+              "A) Only mass",
+              "B) Only area",
+              "C) Force and contact area",
+              "D) Volume and density"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 39,
+            "question": "If the same force is applied over a smaller area, the pressure:",
+            "options": [
+              "A) Decreases",
+              "B) Remains constant",
+              "C) Becomes zero",
+              "D) Increases"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 40,
+            "question": "Which physical quantity is a scalar?",
+            "options": [
+              "A) Force",
+              "B) Pressure",
+              "C) Acceleration",
+              "D) Displacement"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 41,
+            "question": "Bernoulli’s principle applies to which type of fluid flow?",
+            "options": [
+              "A) Static fluids only",
+              "B) Turbulent flow",
+              "C) Ideal fluid in steady flow",
+              "D) Solid materials"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 42,
+            "question": "According to Bernoulli’s principle, when the speed of a fluid increases, the pressure:",
+            "options": [
+              "A) Increases",
+              "B) Decreases",
+              "C) Remains constant",
+              "D) Becomes zero"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 43,
+            "question": "Which quantities are related in Bernoulli’s equation?",
+            "options": [
+              "A) Mass, temperature, and volume",
+              "B) Pressure, velocity, and height",
+              "C) Force, energy, and time",
+              "D) Density, mass, and area"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 44,
+            "question": "Which of the following is not included in Bernoulli’s equation?",
+            "options": [
+              "A) Fluid pressure",
+              "B) Fluid speed",
+              "C) Fluid density",
+              "D) Fluid color"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 45,
+            "question": "Bernoulli’s principle is a consequence of which fundamental law?",
+            "options": [
+              "A) Newton’s Third Law",
+              "B) Conservation of mass",
+              "C) Conservation of energy",
+              "D) Ohm’s Law"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 46,
+            "question": "Which real-life phenomenon can be explained using Bernoulli’s principle?",
+            "options": [
+              "A) Electrical resistance",
+              "B) Magnetic attraction",
+              "C) Lift force on an airplane wing",
+              "D) Radio wave propagation"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 47,
+            "question": "In a horizontal pipe, if fluid speed is constant, the pressure:",
+            "options": [
+              "A) Must decrease",
+              "B) Must increase",
+              "C) Remains constant",
+              "D) Becomes zero"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 48,
+            "question": "Which assumption is required for Bernoulli’s principle to be valid?",
+            "options": [
+              "A) Fluid is compressible",
+              "B) Fluid has high viscosity",
+              "C) No energy loss in the flow",
+              "D) Flow is unsteady"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 49,
+            "question": "What happens to fluid pressure at points where the fluid flows faster?",
+            "options": [
+              "A) Pressure increases",
+              "B) Pressure decreases",
+              "C) Pressure becomes negative",
+              "D) Pressure is unrelated to speed"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 50,
+            "question": "Which unit is used to measure fluid pressure in Bernoulli’s equation?",
+            "options": [
+              "A) Joule (J)",
+              "B) Newton (N)",
+              "C) Pascal (Pa)",
+              "D) Watt (W)"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 51,
+            "question": "Which statement best defines temperature?",
+            "options": [
+              "A) The total energy of a substance",
+              "B) The average kinetic energy of particles",
+              "C) The amount of heat transferred",
+              "D) The mass of a substance"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 52,
+            "question": "Heat is best described as:",
+            "options": [
+              "A) Energy stored in an object",
+              "B) Energy transferred due to a temperature difference",
+              "C) The average speed of particles",
+              "D) A property independent of motion"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 53,
+            "question": "Which of the following is not a unit of temperature?",
+            "options": [
+              "A) Kelvin (K)",
+              "B) Celsius (°",
+              "C) ",
+              "D) Joule (J)"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 54,
+            "question": "What is the SI unit of temperature?",
+            "options": [
+              "A) Celsius (°",
+              "B) Fahrenheit (°F)",
+              "C) ",
+              "D) Joule (J)"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 55,
+            "question": "Which statement correctly compares heat and temperature?",
+            "options": [
+              "A) Heat and temperature are the same",
+              "B) Temperature measures energy transfer",
+              "C) Heat depends on mass and material",
+              "D) Temperature depends on mass"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 56,
+            "question": "When heat is transferred to an object, its temperature:",
+            "options": [
+              "A) Always decreases",
+              "B) Always remains constant",
+              "C) May increase or remain constant",
+              "D) Becomes zero"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 57,
+            "question": "Which process involves heat transfer without mass movement?",
+            "options": [
+              "A) Conduction",
+              "B) Convection",
+              "C) Radiation",
+              "D) Evaporation"
+            ],
+            "correct": "A"
+          },
+          {
+            "id": 58,
+            "question": "Which method of heat transfer does not require a medium?",
+            "options": [
+              "A) Conduction",
+              "B) Convection",
+              "C) Radiation",
+              "D) Diffusion"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 59,
+            "question": "Which quantity determines the direction of heat flow?",
+            "options": [
+              "A) Mass",
+              "B) Density",
+              "C) Temperature difference",
+              "D) Volume"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 60,
+            "question": "Heat naturally flows from:",
+            "options": [
+              "A) Lower temperature to higher temperature",
+              "B) Higher temperature to lower temperature",
+              "C) Larger mass to smaller mass",
+              "D) Solid to liquid"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 61,
+            "question": "Electric charge is a physical property that causes objects to:",
+            "options": [
+              "A) Resist motion",
+              "B) Attract or repel each other",
+              "C) Produce heat",
+              "D) Change mass"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 62,
+            "question": "Which of the following is the SI unit of electric charge?",
+            "options": [
+              "A) Ampere (",
+              "B) Volt (V)",
+              "C) Coulomb (",
+              "D) Ohm (Ω)"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 63,
+            "question": "Which statement about electric current is correct?",
+            "options": [
+              "A) It is the total electric charge",
+              "B) It is the flow of electric charge",
+              "C) It is measured in volts",
+              "D) It does not require a conductor"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 64,
+            "question": "What is the SI unit of electric current?",
+            "options": [
+              "A) Coulomb (",
+              "B) Volt (V)",
+              "C) ",
+              "D) Ampere ("
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 65,
+            "question": "Electric potential difference is also known as:",
+            "options": [
+              "A) Resistance",
+              "B) Current",
+              "C) Voltage",
+              "D) Power"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 66,
+            "question": "Which unit is used to measure voltage?",
+            "options": [
+              "A) Ampere (",
+              "B) Watt (W)",
+              "C) Volt (V)",
+              "D) Coulomb ("
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 67,
+            "question": "Which quantity represents opposition to the flow of electric current?",
+            "options": [
+              "A) Charge",
+              "B) Voltage",
+              "C) Resistance",
+              "D) Power"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 68,
+            "question": "What is the SI unit of resistance?",
+            "options": [
+              "A) Ohm (Ω)",
+              "B) Volt (V)",
+              "C) Ampere (",
+              "D) Watt (W)"
+            ],
+            "correct": "A"
+          },
+          {
+            "id": 69,
+            "question": "Which statement about conductors is correct?",
+            "options": [
+              "A) They prevent current flow",
+              "B) They allow electric charges to move freely",
+              "C) They store electric charge permanently",
+              "D) They eliminate resistance"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 70,
+            "question": "Which physical quantity measures the rate of energy transfer in an electric circuit?",
+            "options": [
+              "A) Current",
+              "B) Voltage",
+              "C) Resistance",
+              "D) Electric power"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 71,
+            "question": "Magnetism is a physical phenomenon associated with:",
+            "options": [
+              "A) Electric charge at rest",
+              "B) Moving electric charges",
+              "C) Thermal motion of particles",
+              "D) Gravitational attraction"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 72,
+            "question": "Which object naturally produces a magnetic field?",
+            "options": [
+              "A) Plastic rod",
+              "B) Wooden block",
+              "C) Bar magnet",
+              "D) Glass plate"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 73,
+            "question": "Which of the following are the two poles of a magnet?",
+            "options": [
+              "A) Positive and negative",
+              "B) Left and right",
+              "C) North and south",
+              "D) Up and down"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 74,
+            "question": "What happens when like magnetic poles are brought close together?",
+            "options": [
+              "A) They attract each other",
+              "B) They repel each other",
+              "C) They disappear",
+              "D) They merge"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 75,
+            "question": "Which statement about magnetic poles is correct?",
+            "options": [
+              "A) A single magnetic pole can exist alone",
+              "B) Magnetic poles always appear in pairs",
+              "C) Only north poles exist in nature",
+              "D) Poles depend on gravity"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 76,
+            "question": "Which device is commonly used to detect magnetic fields?",
+            "options": [
+              "A) Thermometer",
+              "B) Voltmeter",
+              "C) Compass",
+              "D) Barometer"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 77,
+            "question": "The direction of a magnetic field outside a magnet is conventionally taken from:",
+            "options": [
+              "A) South pole to north pole",
+              "B) Center to surface",
+              "C) North pole to south pole",
+              "D) East to west"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 78,
+            "question": "Which physical quantity is affected when a charged particle moves in a magnetic field?",
+            "options": [
+              "A) Mass",
+              "B) Temperature",
+              "C) Motion (trajectory)",
+              "D) Volume"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 79,
+            "question": "Which statement correctly relates electricity and magnetism?",
+            "options": [
+              "A) They are completely unrelated",
+              "B) Electric current can produce magnetism",
+              "C) Magnetism eliminates electric current",
+              "D) Magnetism exists without charge"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 80,
+            "question": "Which unit is commonly used to describe magnetic field strength?",
+            "options": [
+              "A) Tesla (T)",
+              "B) Watt (W)",
+              "C) Volt (V)",
+              "D) Ohm (Ω)"
+            ],
+            "correct": "A"
+          },
+          {
+            "id": 81,
+            "question": "A wave is best defined as:",
+            "options": [
+              "A) The movement of matter from one place to another",
+              "B) A transfer of energy without net transfer of matter",
+              "C) The motion of particles in a vacuum",
+              "D) A form of electric current"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 82,
+            "question": "Which of the following is a mechanical wave?",
+            "options": [
+              "A) Light wave",
+              "B) Radio wave",
+              "C) Sound wave",
+              "D) X-ray"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 83,
+            "question": "Which type of wave requires a medium to propagate?",
+            "options": [
+              "A) Electromagnetic wave",
+              "B) Mechanical wave",
+              "C) Light wave",
+              "D) Gamma ray"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 84,
+            "question": "The amplitude of a wave is related to its:",
+            "options": [
+              "A) Speed",
+              "B) Frequency",
+              "C) Energy",
+              "D) Wavelength"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 85,
+            "question": "Which quantity represents the distance between two successive crests?",
+            "options": [
+              "A) Frequency",
+              "B) Period",
+              "C) Amplitude",
+              "D) Wavelength"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 86,
+            "question": "What is the SI unit of frequency?",
+            "options": [
+              "A) Second (s)",
+              "B) Hertz (Hz)",
+              "C) Meter (m)",
+              "D) Joule (J)"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 87,
+            "question": "Which statement about frequency is correct?",
+            "options": [
+              "A) It is measured in meters",
+              "B) It is the time for one complete cycle",
+              "C) It is the number of cycles per second",
+              "D) It depends on amplitude"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 88,
+            "question": "Which type of wave has particle oscillations perpendicular to the direction of propagation?",
+            "options": [
+              "A) Longitudinal wave",
+              "B) Transverse wave",
+              "C) Mechanical wave",
+              "D) Sound wave"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 89,
+            "question": "In a longitudinal wave, compressions and rarefactions occur due to changes in:",
+            "options": [
+              "A) Particle direction",
+              "B) Particle spacing",
+              "C) Wave speed",
+              "D) Amplitude direction"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 90,
+            "question": "Which wave property determines the pitch of a sound?",
+            "options": [
+              "A) Amplitude",
+              "B) Speed",
+              "C) Frequency",
+              "D) Wavelength"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 91,
+            "question": "Light is best described as:",
+            "options": [
+              "A) A mechanical wave",
+              "B) A longitudinal wave",
+              "C) An electromagnetic wave",
+              "D) A sound wave"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 92,
+            "question": "Which of the following does not require a medium to propagate?",
+            "options": [
+              "A) Sound",
+              "B) Water waves",
+              "C) Light",
+              "D) Seismic waves"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 93,
+            "question": "The speed of light in vacuum is approximately:",
+            "options": [
+              "A) m/s",
+              "B) m/s",
+              "C) m/s",
+              "D) m/s"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 94,
+            "question": "Which phenomenon explains the bending of light when it passes from one medium to another?",
+            "options": [
+              "A) Reflection",
+              "B) Diffraction",
+              "C) Refraction",
+              "D) Dispersion"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 95,
+            "question": "Which law states that the angle of incidence equals the angle of reflection?",
+            "options": [
+              "A) Snell’s Law",
+              "B) Law of Refraction",
+              "C) Law of Reflection",
+              "D) Bernoulli’s Principle"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 96,
+            "question": "Which surface produces regular (specular) reflection?",
+            "options": [
+              "A) Rough wall",
+              "B) Paper",
+              "C) Calm mirror surface",
+              "D) Concrete floor"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 97,
+            "question": "The refractive index of a medium is related to:",
+            "options": [
+              "A) Density only",
+              "B) Speed of light in the medium",
+              "C) Temperature only",
+              "D) Wavelength only"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 98,
+            "question": "Which phenomenon causes white light to separate into different colors?",
+            "options": [
+              "A) Reflection",
+              "B) Refraction",
+              "C) Diffraction",
+              "D) Dispersion"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 99,
+            "question": "Which color of visible light has the shortest wavelength?",
+            "options": [
+              "A) Red",
+              "B) Green",
+              "C) Yellow",
+              "D) Violet"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 100,
+            "question": "Which optical device is primarily used to form images by refraction?",
+            "options": [
+              "A) Plane mirror",
+              "B) Convex lens",
+              "C) Prism",
+              "D) Screen"
+            ],
+            "correct": "B"
+          }
+        ]
+      },
+      "deneme_1": {
+        "title": "PHYSICS – MIXED MOCK EXAM (30 QUESTIONS)",
+        "questions": [
+          {
+            "id": 1,
+            "question": "An object moves in a straight line and returns to its starting point. Which statement is correct?",
+            "options": [
+              "A) Distance is zero",
+              "B) Displacement is zero",
+              "C) Speed is zero",
+              "D) Velocity is undefined"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 2,
+            "question": "If no net force acts on an object, which condition must be true?",
+            "options": [
+              "A) The object is at rest",
+              "B) The object moves with constant velocity",
+              "C) The object accelerates",
+              "D) The object gains energy"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 3,
+            "question": "Which situation represents positive work being done on an object?",
+            "options": [
+              "A) Force perpendicular to motion",
+              "B) Force opposite to displacement",
+              "C) Force in the direction of motion",
+              "D) No displacement occurs"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 4,
+            "question": "Two objects have the same kinetic energy. Which must be true?",
+            "options": [
+              "A) They have the same mass",
+              "B) They have the same speed",
+              "C) Their motion energies are equal",
+              "D) Their accelerations are equal"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 5,
+            "question": "If pressure increases while force remains constant, the contact area must:",
+            "options": [
+              "A) Increase",
+              "B) Remain constant",
+              "C) Decrease",
+              "D) Become zero"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 6,
+            "question": "Two substances have equal volume but different masses. They must differ in:",
+            "options": [
+              "A) Pressure",
+              "B) Density",
+              "C) Temperature",
+              "D) Force"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 7,
+            "question": "In fluid flow, the region with the highest speed corresponds to:",
+            "options": [
+              "A) Highest pressure",
+              "B) Lowest pressure",
+              "C) Constant pressure",
+              "D) Maximum density"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 8,
+            "question": "Which statement best explains why airplane wings generate lift?",
+            "options": [
+              "A) Increased mass above the wing",
+              "B) Faster airflow above the wing reduces pressure",
+              "C) Gravity decreases at high altitude",
+              "D) Density increases below the wing"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 9,
+            "question": "Heat transfer stops when two objects reach:",
+            "options": [
+              "A) Same mass",
+              "B) Same density",
+              "C) Thermal equilibrium",
+              "D) Maximum temperature"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 10,
+            "question": "Which quantity depends on both mass and temperature change?",
+            "options": [
+              "A) Temperature",
+              "B) Heat",
+              "C) Density",
+              "D) Pressure"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 11,
+            "question": "Electric current exists only when there is:",
+            "options": [
+              "A) Electric charge",
+              "B) Potential difference",
+              "C) Resistance",
+              "D) Power"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 12,
+            "question": "If resistance increases in a circuit while voltage stays constant, current:",
+            "options": [
+              "A) Increases",
+              "B) Decreases",
+              "C) Becomes zero",
+              "D) Reverses direction"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 13,
+            "question": "Which device converts electrical energy directly into mechanical motion?",
+            "options": [
+              "A) Generator",
+              "B) Motor",
+              "C) Transformer",
+              "D) Battery"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 14,
+            "question": "A magnetic field is produced when:",
+            "options": [
+              "A) Electric charges are stationary",
+              "B) Objects gain mass",
+              "C) Electric charges move",
+              "D) Temperature increases"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 15,
+            "question": "Which situation shows a force acting without contact?",
+            "options": [
+              "A) Friction",
+              "B) Normal force",
+              "C) Magnetic force",
+              "D) Tension"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 16,
+            "question": "Which wave property determines the energy carried by a wave?",
+            "options": [
+              "A) Frequency only",
+              "B) Speed only",
+              "C) Amplitude",
+              "D) Wavelength only"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 17,
+            "question": "If wave frequency increases while speed remains constant, wavelength:",
+            "options": [
+              "A) Increases",
+              "B) Decreases",
+              "C) Remains constant",
+              "D) Becomes zero"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 18,
+            "question": "Sound cannot travel through a vacuum because:",
+            "options": [
+              "A) Its speed is too low",
+              "B) It requires a medium",
+              "C) Its wavelength is large",
+              "D) Pressure is absent"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 19,
+            "question": "Which electromagnetic wave has the highest energy?",
+            "options": [
+              "A) Radio waves",
+              "B) Infrared",
+              "C) Visible light",
+              "D) Gamma rays"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 20,
+            "question": "Light changes direction when entering a new medium due to a change in:",
+            "options": [
+              "A) Frequency",
+              "B) Energy",
+              "C) Speed",
+              "D) Color"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 21,
+            "question": "Which color bends the most when passing through a prism?",
+            "options": [
+              "A) Red",
+              "B) Yellow",
+              "C) Green",
+              "D) Violet"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 22,
+            "question": "Which law explains why a mirror image appears symmetrical?",
+            "options": [
+              "A) Law of Refraction",
+              "B) Law of Conservation of Energy",
+              "C) Law of Reflection",
+              "D) Newton’s Second Law"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 23,
+            "question": "Which quantity is conserved in an isolated system?",
+            "options": [
+              "A) Speed",
+              "B) Acceleration",
+              "C) Energy",
+              "D) Force"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 24,
+            "question": "An object slowing down while moving straight has acceleration that is:",
+            "options": [
+              "A) Zero",
+              "B) In the same direction as velocity",
+              "C) Opposite to velocity",
+              "D) Perpendicular to velocity"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 25,
+            "question": "Which statement about inertia is correct?",
+            "options": [
+              "A) It depends on velocity",
+              "B) It depends on mass",
+              "C) It depends on force",
+              "D) It depends on energy"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 26,
+            "question": "A higher power output means:",
+            "options": [
+              "A) More force",
+              "B) More work done per unit time",
+              "C) More energy stored",
+              "D) Higher acceleration"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 27,
+            "question": "Which factor does not affect electric resistance?",
+            "options": [
+              "A) Length of conductor",
+              "B) Material",
+              "C) Cross-sectional area",
+              "D) Electric charge amount"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 28,
+            "question": "Which statement correctly describes transverse waves?",
+            "options": [
+              "A) Particle motion is parallel to wave direction",
+              "B) Energy transfer requires a medium",
+              "C) Particle motion is perpendicular to wave direction",
+              "D) They only occur in solids"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 29,
+            "question": "Why does metal feel colder than wood at the same temperature?",
+            "options": [
+              "A) Metal has lower density",
+              "B) Metal transfers heat faster",
+              "C) Metal has lower temperature",
+              "D) Wood produces heat"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 30,
+            "question": "Which concept links electricity and magnetism?",
+            "options": [
+              "A) Resistance",
+              "B) Thermal energy",
+              "C) Electromagnetic interaction",
+              "D) Density"
+            ],
+            "correct": "C"
+          }
+        ]
+      },
+      "deneme_2": {
+        "title": "PHYSICS – ADVANCED MIXED MOCK EXAM (30 QUESTIONS)",
+        "questions": [
+          {
+            "id": 1,
+            "question": "An object moves with constant speed but its velocity continuously changes. Which statement is correct?",
+            "options": [
+              "A) The object has zero acceleration",
+              "B) The object must be moving in a straight line",
+              "C) The object is accelerating",
+              "D) The net force on the object is zero"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 2,
+            "question": "Which situation guarantees that no work is done on an object?",
+            "options": [
+              "A) A force acts while the object moves",
+              "B) A force acts perpendicular to displacement",
+              "C) A force increases speed",
+              "D) A force changes direction of motion"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 3,
+            "question": "An object has kinetic energy but zero momentum. This situation is:",
+            "options": [
+              "A) Impossible",
+              "B) Possible only at rest",
+              "C) Possible in circular motion",
+              "D) Possible only in a vacuum"
+            ],
+            "correct": "A"
+          },
+          {
+            "id": 4,
+            "question": "Which quantity must change if the net force on an object is nonzero?",
+            "options": [
+              "A) Mass",
+              "B) Velocity",
+              "C) Position",
+              "D) Energy"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 5,
+            "question": "Two objects fall freely near Earth. Ignoring air resistance, which statement is correct?",
+            "options": [
+              "A) Heavier object accelerates more",
+              "B) Lighter object accelerates more",
+              "C) Both accelerate equally",
+              "D) Acceleration depends on shape"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 6,
+            "question": "A system’s total mechanical energy decreases. The most likely explanation is:",
+            "options": [
+              "A) Momentum is conserved",
+              "B) Non-conservative forces are present",
+              "C) Mass is not conserved",
+              "D) Newton’s laws fail"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 7,
+            "question": "Which change increases pressure without changing force?",
+            "options": [
+              "A) Increasing mass",
+              "B) Increasing density",
+              "C) Decreasing contact area",
+              "D) Increasing volume"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 8,
+            "question": "A substance floats in a liquid. Which condition must be true?",
+            "options": [
+              "A) Object density > liquid density",
+              "B) Object density = liquid density",
+              "C) Object density < liquid density",
+              "D) Object mass is zero"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 9,
+            "question": "Bernoulli’s principle fails when:",
+            "options": [
+              "A) Fluid speed is low",
+              "B) Flow is turbulent and energy is lost",
+              "C) Pressure is constant",
+              "D) Pipe is horizontal"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 10,
+            "question": "Which statement best explains why narrowing a pipe increases fluid speed?",
+            "options": [
+              "A) Mass increases",
+              "B) Energy is destroyed",
+              "C) Conservation of mass",
+              "D) Temperature rises"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 11,
+            "question": "Two objects are at the same temperature but have different internal energies. This is because:",
+            "options": [
+              "A) Temperature measures total energy",
+              "B) Internal energy depends on mass",
+              "C) Heat depends only on temperature",
+              "D) Energy transfer has occurred"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 12,
+            "question": "During a phase change, which quantity remains constant?",
+            "options": [
+              "A) Heat",
+              "B) Internal energy",
+              "C) Temperature",
+              "D) Density"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 13,
+            "question": "Which change would not increase electric current in a circuit?",
+            "options": [
+              "A) Increasing voltage",
+              "B) Decreasing resistance",
+              "C) Increasing wire length",
+              "D) Improving conductivity"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 14,
+            "question": "Which statement about electric potential difference is correct?",
+            "options": [
+              "A) It measures charge flow",
+              "B) It causes current to flow",
+              "C) It is the same as resistance",
+              "D) It depends on current"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 15,
+            "question": "A charged particle moves parallel to a magnetic field. The magnetic force on it is:",
+            "options": [
+              "A) Maximum",
+              "B) Minimum",
+              "C) Zero",
+              "D) Infinite"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 16,
+            "question": "Which situation produces an induced magnetic field?",
+            "options": [
+              "A) Stationary charge",
+              "B) Moving charge",
+              "C) Insulating material",
+              "D) Constant temperature"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 17,
+            "question": "Which wave property remains unchanged when a wave enters a new medium?",
+            "options": [
+              "A) Speed",
+              "B) Wavelength",
+              "C) Frequency",
+              "D) Amplitude"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 18,
+            "question": "Increasing amplitude of a sound wave results in:",
+            "options": [
+              "A) Higher pitch",
+              "B) Higher speed",
+              "C) Greater loudness",
+              "D) Shorter wavelength"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 19,
+            "question": "Which statement distinguishes electromagnetic waves from mechanical waves?",
+            "options": [
+              "A) They carry energy",
+              "B) They have wavelength",
+              "C) They require no medium",
+              "D) They have frequency"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 20,
+            "question": "Which phenomenon demonstrates the wave nature of light most clearly?",
+            "options": [
+              "A) Reflection",
+              "B) Refraction",
+              "C) Diffraction",
+              "D) Absorption"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 21,
+            "question": "If light slows down in a medium, which quantity must change?",
+            "options": [
+              "A) Frequency",
+              "B) Energy",
+              "C) Wavelength",
+              "D) Color perception"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 22,
+            "question": "Which condition produces total internal reflection?",
+            "options": [
+              "A) Light entering denser medium",
+              "B) Angle of incidence below critical angle",
+              "C) Light traveling from denser to less dense medium",
+              "D) Normal incidence"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 23,
+            "question": "Which physical law explains why energy transformations occur but total energy remains constant?",
+            "options": [
+              "A) Newton’s First Law",
+              "B) Law of Conservation of Energy",
+              "C) Law of Reflection",
+              "D) Ohm’s Law"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 24,
+            "question": "An object moves in a circle at constant speed. Which statement is true?",
+            "options": [
+              "A) Velocity is constant",
+              "B) Acceleration is zero",
+              "C) Net force is nonzero",
+              "D) Motion is uniform linear"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 25,
+            "question": "Which factor directly affects inertia?",
+            "options": [
+              "A) Velocity",
+              "B) Acceleration",
+              "C) Mass",
+              "D) Force"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 26,
+            "question": "Which scenario involves energy transfer without matter transfer?",
+            "options": [
+              "A) Conduction",
+              "B) Convection",
+              "C) Radiation",
+              "D) Evaporation"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 27,
+            "question": "Which change decreases wave speed in a medium?",
+            "options": [
+              "A) Increasing frequency",
+              "B) Increasing amplitude",
+              "C) Changing medium properties",
+              "D) Increasing energy"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 28,
+            "question": "Which statement about lenses is correct?",
+            "options": [
+              "A) All lenses reflect light",
+              "B) Convex lenses converge light",
+              "C) Concave lenses form only real images",
+              "D) Lenses work only in air"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 29,
+            "question": "Why does violet light refract more than red light?",
+            "options": [
+              "A) Higher speed",
+              "B) Longer wavelength",
+              "C) Higher frequency interaction with medium",
+              "D) Lower energy"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 30,
+            "question": "Which concept unifies electricity, magnetism, and light?",
+            "options": [
+              "A) Classical mechanics",
+              "B) Thermodynamics",
+              "C) Electromagnetic theory",
+              "D) Quantum uncertainty"
+            ],
+            "correct": "C"
+          }
+        ]
+      },
+      "deneme_3": {
+        "title": "PHYSICS – HIGH-LEVEL CONCEPTUAL MOCK EXAM (30 QUESTIONS)",
+        "questions": [
+          {
+            "id": 1,
+            "question": "An object moves such that its acceleration is always perpendicular to its velocity. Which quantity must remain constant?",
+            "options": [
+              "A) Speed",
+              "B) Velocity",
+              "C) Momentum",
+              "D) Kinetic energy change rate"
+            ],
+            "correct": "A"
+          },
+          {
+            "id": 2,
+            "question": "Which situation requires a nonzero net force even though speed is constant?",
+            "options": [
+              "A) Straight-line motion",
+              "B) Rest",
+              "C) Circular motion",
+              "D) Free fall"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 3,
+            "question": "Which statement is always true for an isolated system?",
+            "options": [
+              "A) Momentum is conserved",
+              "B) Kinetic energy is conserved",
+              "C) Mechanical energy is conserved",
+              "D) Speed is conserved"
+            ],
+            "correct": "A"
+          },
+          {
+            "id": 4,
+            "question": "A force acts on an object but does no work. Which change is still possible?",
+            "options": [
+              "A) Change in speed",
+              "B) Change in direction",
+              "C) Change in kinetic energy",
+              "D) Change in mechanical energy"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 5,
+            "question": "Which statement correctly distinguishes work from energy?",
+            "options": [
+              "A) Work and energy have different units",
+              "B) Energy is a transfer, work is a quantity",
+              "C) Work is a transfer of energy",
+              "D) Energy exists only when work is done"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 6,
+            "question": "Two objects experience the same net force for the same time. Which must be equal?",
+            "options": [
+              "A) Final velocity",
+              "B) Change in momentum",
+              "C) Acceleration",
+              "D) Kinetic energy change"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 7,
+            "question": "A material sinks in water but floats in oil. Which statement must be true?",
+            "options": [
+              "A) Oil is denser than water",
+              "B) The object’s density is between oil and water",
+              "C) The object’s mass changes",
+              "D) Buoyant force depends only on volume"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 8,
+            "question": "Increasing depth in a fluid increases pressure because:",
+            "options": [
+              "A) Density increases",
+              "B) Gravity increases",
+              "C) Weight of fluid above increases",
+              "D) Volume decreases"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 9,
+            "question": "Bernoulli’s equation is invalid if:",
+            "options": [
+              "A) Flow speed changes",
+              "B) Pressure varies",
+              "C) Mechanical energy is not conserved",
+              "D) Height is constant"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 10,
+            "question": "Why does fluid speed increase at a narrow section of a pipe?",
+            "options": [
+              "A) Pressure energy increases",
+              "B) Density decreases",
+              "C) Mass flow rate is conserved",
+              "D) Temperature rises"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 11,
+            "question": "Two objects at the same temperature feel different to the touch because:",
+            "options": [
+              "A) Their densities differ",
+              "B) Their thermal conductivities differ",
+              "C) Their internal energies differ",
+              "D) Their masses differ"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 12,
+            "question": "Which process transfers energy without requiring particles or a medium?",
+            "options": [
+              "A) Conduction",
+              "B) Convection",
+              "C) Radiation",
+              "D) Diffusion"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 13,
+            "question": "During melting, which statement is correct?",
+            "options": [
+              "A) Temperature increases",
+              "B) Kinetic energy increases",
+              "C) Potential energy increases",
+              "D) Heat transfer stops"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 14,
+            "question": "If voltage is applied but no current flows, the circuit must:",
+            "options": [
+              "A) Have high power",
+              "B) Be open or insulating",
+              "C) Have zero resistance",
+              "D) Be grounded"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 15,
+            "question": "Which quantity determines the direction of electric current?",
+            "options": [
+              "A) Resistance",
+              "B) Electric field",
+              "C) Power",
+              "D) Charge magnitude"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 16,
+            "question": "A magnetic field does no work on a charged particle because:",
+            "options": [
+              "A) The force is weak",
+              "B) The force is conservative",
+              "C) The force is perpendicular to velocity",
+              "D) Magnetic fields have no energy"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 17,
+            "question": "Which change guarantees a change in magnetic force on a charged particle?",
+            "options": [
+              "A) Changing speed magnitude only",
+              "B) Changing mass",
+              "C) Changing direction of motion",
+              "D) Changing charge sign only"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 18,
+            "question": "Which wave property depends only on the source, not the medium?",
+            "options": [
+              "A) Speed",
+              "B) Wavelength",
+              "C) Frequency",
+              "D) Amplitude"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 19,
+            "question": "Why can two waves pass through each other without permanent change?",
+            "options": [
+              "A) Energy is destroyed",
+              "B) Waves carry matter",
+              "C) Superposition principle",
+              "D) Reflection dominates"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 20,
+            "question": "Increasing sound loudness without changing pitch requires increasing:",
+            "options": [
+              "A) Frequency",
+              "B) Speed",
+              "C) Amplitude",
+              "D) Wavelength"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 21,
+            "question": "Light entering a denser medium bends toward the normal because:",
+            "options": [
+              "A) Frequency decreases",
+              "B) Speed decreases",
+              "C) Energy increases",
+              "D) Wavelength increases"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 22,
+            "question": "Which quantity of light never changes when crossing media?",
+            "options": [
+              "A) Speed",
+              "B) Wavelength",
+              "C) Frequency",
+              "D) Direction"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 23,
+            "question": "Total internal reflection occurs because:",
+            "options": [
+              "A) Light speeds up",
+              "B) Refraction angle becomes imaginary",
+              "C) No refracted ray satisfies Snell’s law",
+              "D) Energy is absorbed"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 24,
+            "question": "Which phenomenon most clearly proves that light behaves as a wave?",
+            "options": [
+              "A) Reflection",
+              "B) Refraction",
+              "C) Diffraction",
+              "D) Absorption"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 25,
+            "question": "Which statement about inertia is most precise?",
+            "options": [
+              "A) Resistance to motion",
+              "B) Resistance to acceleration",
+              "C) Resistance to force",
+              "D) Resistance to energy change"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 26,
+            "question": "An object moving upward slows down. Which directions are velocity and acceleration?",
+            "options": [
+              "A) Same direction",
+              "B) Opposite directions",
+              "C) Perpendicular",
+              "D) Random"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 27,
+            "question": "Which statement links electricity and magnetism most fundamentally?",
+            "options": [
+              "A) Charges create forces",
+              "B) Moving charges create magnetic fields",
+              "C) Resistance limits current",
+              "D) Energy is conserved"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 28,
+            "question": "Which system converts mechanical energy into electrical energy?",
+            "options": [
+              "A) Motor",
+              "B) Heater",
+              "C) Generator",
+              "D) Resistor"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 29,
+            "question": "Which concept explains why waves reflect, refract, and diffract?",
+            "options": [
+              "A) Conservation of mass",
+              "B) Conservation of energy",
+              "C) Wavefront behavior",
+              "D) Newton’s laws"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 30,
+            "question": "Which single framework unifies light, electricity, and magnetism?",
+            "options": [
+              "A) Classical mechanics",
+              "B) Thermodynamics",
+              "C) Electromagnetic theory",
+              "D) Fluid dynamics"
+            ],
+            "correct": "C"
+          }
+        ]
+      },
+      "deneme_4": {
+        "title": "PHYSICS – VERY HIGH LEVEL CONCEPTUAL MOCK EXAM (30 QUESTIONS)",
+        "questions": [
+          {
+            "id": 1,
+            "question": "An object moves so that its kinetic energy remains constant, yet work is continuously done on it. Which must be true?",
+            "options": [
+              "A) The work is zero",
+              "B) Forces cancel at all times",
+              "C) Speed is constant but direction changes",
+              "D) Acceleration is zero"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 2,
+            "question": "Which situation guarantees nonzero acceleration but zero work?",
+            "options": [
+              "A) Object speeding up in a straight line",
+              "B) Object slowing down",
+              "C) Uniform circular motion",
+              "D) Free fall"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 3,
+            "question": "Which statement is sufficient (but not necessary) to conclude that net force is zero?",
+            "options": [
+              "A) Acceleration is zero",
+              "B) Velocity is zero",
+              "C) Position is constant",
+              "D) Speed is increasing"
+            ],
+            "correct": "A"
+          },
+          {
+            "id": 4,
+            "question": "A force acts on an object and changes its momentum but not its kinetic energy. The force must be:",
+            "options": [
+              "A) Parallel to velocity",
+              "B) Opposite to velocity",
+              "C) Perpendicular to velocity",
+              "D) Zero"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 5,
+            "question": "Which quantity is frame-dependent (changes with observer)?",
+            "options": [
+              "A) Mass",
+              "B) Time interval",
+              "C) Kinetic energy",
+              "D) Charge"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 6,
+            "question": "Two objects collide elastically. Which statement must be true?",
+            "options": [
+              "A) Forces during collision are unequal",
+              "B) Momentum is conserved",
+              "C) Velocities are conserved",
+              "D) Kinetic energy of each object is conserved"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 7,
+            "question": "A floating object is pushed fully underwater and released. Immediately after release, the net force is:",
+            "options": [
+              "A) Zero",
+              "B) Downward",
+              "C) Upward",
+              "D) Equal to weight"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 8,
+            "question": "Which change would increase buoyant force without changing fluid density?",
+            "options": [
+              "A) Increasing object mass",
+              "B) Increasing submerged volume",
+              "C) Increasing depth",
+              "D) Increasing gravity"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 9,
+            "question": "Bernoulli’s equation cannot predict pressure correctly when:",
+            "options": [
+              "A) Flow speed varies",
+              "B) Flow is horizontal",
+              "C) Viscous energy losses are significant",
+              "D) Pipe diameter changes"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 10,
+            "question": "In real fluids, why does pressure drop along a horizontal pipe?",
+            "options": [
+              "A) Density decreases",
+              "B) Speed increases",
+              "C) Energy is dissipated",
+              "D) Gravity acts"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 11,
+            "question": "Two metal blocks are at the same temperature. One feels colder because it:",
+            "options": [
+              "A) Has lower internal energy",
+              "B) Has higher density",
+              "C) Transfers heat faster",
+              "D) Has lower specific heat"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 12,
+            "question": "Which statement about heat is most precise?",
+            "options": [
+              "A) Heat is energy stored in matter",
+              "B) Heat is energy in transit",
+              "C) Heat equals internal energy",
+              "D) Heat depends only on temperature"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 13,
+            "question": "During boiling at constant pressure:",
+            "options": [
+              "A) Temperature increases",
+              "B) Kinetic energy increases",
+              "C) Potential energy of particles increases",
+              "D) Heat transfer stops"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 14,
+            "question": "If current exists but electric field inside a conductor were zero, this would violate:",
+            "options": [
+              "A) Ohm’s law",
+              "B) Charge conservation",
+              "C) Cause–effect relation",
+              "D) Energy conservation"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 15,
+            "question": "Which statement is logically correct?",
+            "options": [
+              "A) Current causes voltage",
+              "B) Resistance causes current",
+              "C) Voltage causes current",
+              "D) Power causes resistance"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 16,
+            "question": "A charged particle enters a magnetic field and slows down. Which must also be present?",
+            "options": [
+              "A) Electric field",
+              "B) Gravitational field",
+              "C) Stronger magnetic field",
+              "D) Higher charge"
+            ],
+            "correct": "A"
+          },
+          {
+            "id": 17,
+            "question": "Which property of magnetic force prevents it from changing kinetic energy?",
+            "options": [
+              "A) It is conservative",
+              "B) It acts at a distance",
+              "C) It is perpendicular to velocity",
+              "D) It depends on charge"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 18,
+            "question": "Which wave behavior cannot be explained without wave superposition?",
+            "options": [
+              "A) Reflection",
+              "B) Refraction",
+              "C) Diffraction",
+              "D) Absorption"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 19,
+            "question": "Two waves overlap destructively. Which statement is true?",
+            "options": [
+              "A) Energy is destroyed",
+              "B) Amplitude becomes zero permanently",
+              "C) Energy redistributes",
+              "D) Waves disappear"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 20,
+            "question": "Which property of a wave is fixed by the source only?",
+            "options": [
+              "A) Speed",
+              "B) Wavelength",
+              "C) Frequency",
+              "D) Energy"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 21,
+            "question": "Light enters glass from air. Which pair of quantities must change together?",
+            "options": [
+              "A) Speed and frequency",
+              "B) Speed and wavelength",
+              "C) Frequency and energy",
+              "D) Direction and frequency"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 22,
+            "question": "Total internal reflection occurs because:",
+            "options": [
+              "A) Light energy vanishes",
+              "B) Snell’s law has no real solution",
+              "C) Speed becomes infinite",
+              "D) Frequency changes"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 23,
+            "question": "Which phenomenon requires light to behave as a wave?",
+            "options": [
+              "A) Image formation",
+              "B) Reflection",
+              "C) Interference",
+              "D) Refraction"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 24,
+            "question": "Which statement best describes inertia?",
+            "options": [
+              "A) Resistance to motion",
+              "B) Resistance to force",
+              "C) Resistance to acceleration",
+              "D) Resistance to energy transfer"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 25,
+            "question": "An object moves upward while slowing down. Which combination is correct?",
+            "options": [
+              "A) Velocity ↑, Acceleration ↑",
+              "B) Velocity ↑, Acceleration ↓",
+              "C) Velocity ↓, Acceleration ↓",
+              "D) Velocity ↓, Acceleration ↑ (Upward positive)"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 26,
+            "question": "Which law explains why rockets work in vacuum?",
+            "options": [
+              "A) Conservation of energy",
+              "B) Newton’s First Law",
+              "C) Newton’s Third Law",
+              "D) Bernoulli’s principle"
+            ],
+            "correct": "C"
+          },
+          {
+            "id": 27,
+            "question": "Which concept allows electricity and magnetism to be viewed as one phenomenon?",
+            "options": [
+              "A) Charge conservation",
+              "B) Field theory",
+              "C) Energy transfer",
+              "D) Resistance"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 28,
+            "question": "Which device violates no physical laws but appears to create energy?",
+            "options": [
+              "A) Generator",
+              "B) Transformer",
+              "C) Perpetual motion machine",
+              "D) Heat engine"
+            ],
+            "correct": "D"
+          },
+          {
+            "id": 29,
+            "question": "Why does changing medium not affect wave frequency?",
+            "options": [
+              "A) Energy is conserved",
+              "B) Source determines oscillation rate",
+              "C) Medium controls speed only",
+              "D) Wavelength is fixed"
+            ],
+            "correct": "B"
+          },
+          {
+            "id": 30,
+            "question": "Which framework is required to fully unify electricity, magnetism, and light?",
+            "options": [
+              "A) Classical mechanics",
+              "B) Thermodynamics",
+              "C) Maxwell’s electromagnetic theory",
+              "D) Fluid mechanics"
+            ],
+            "correct": "C"
+          }
+        ]
+      }
+    };
+
+    const QuizApp = {
+      selectedQuiz: null,
+      currentQuestion: 0,
+      userAnswers: [],
+      showResults: false,
+      checked: false,
+      reviewMode: false,
+
+      init() {
+        this.render();
+      },
+
+      isTestMode() {
+        // Deneme testleri test modu olarak çalışır
+        return this.selectedQuiz && this.selectedQuiz.startsWith('deneme_');
+      },
+
+      selectQuiz(quizKey) {
+        this.selectedQuiz = quizKey;
+        this.currentQuestion = 0;
+        this.userAnswers = new Array(quizData[quizKey].questions.length).fill(null);
+        this.showResults = false;
+        this.checked = false;
+        this.reviewMode = false;
+        this.render();
+      },
+
+      selectAnswer(optionIndex) {
+        if (this.checked && !this.isTestMode()) return;
+        if (this.reviewMode) return;
+
+        this.userAnswers[this.currentQuestion] = optionIndex;
+
+        // Test modunda otomatik olarak bir sonraki soruya geç
+        if (this.isTestMode() && this.currentQuestion < quizData[this.selectedQuiz].questions.length - 1) {
+          setTimeout(() => {
+            this.nextQuestion();
+          }, 300);
+        } else if (!this.isTestMode()) {
+          this.render();
+        }
+      },
+
+      nextQuestion() {
+        if (this.currentQuestion < quizData[this.selectedQuiz].questions.length - 1) {
+          this.currentQuestion++;
+          this.checked = false;
+          this.render();
+        }
+      },
+
+      prevQuestion() {
+        if (this.currentQuestion > 0) {
+          this.currentQuestion--;
+          this.checked = false;
+          this.render();
+        }
+      },
+
+      goToQuestion(index) {
+        this.currentQuestion = index;
+        this.reviewMode = true;
+        this.showResults = false;
+        this.render();
+      },
+
+      checkAnswers() {
+        this.checked = true;
+        this.render();
+      },
+
+      calculateScore() {
+        let correct = 0;
+        const questions = quizData[this.selectedQuiz].questions;
+        const results = [];
+
+        questions.forEach((q, index) => {
+          const userAnswer = this.userAnswers[index];
+          let isCorrect = false;
+
+          if (userAnswer !== null) {
+            const selectedOption = q.options[userAnswer];
+            const selectedLetter = selectedOption.charAt(0);
+            if (selectedLetter === q.correct) {
+              correct++;
+              isCorrect = true;
+            }
+          }
+
+          results.push({
+            questionIndex: index,
+            isCorrect: isCorrect,
+            userAnswer: userAnswer,
+            correctAnswer: q.correct
+          });
+        });
+
+        return {
+          correct,
+          incorrect: questions.length - correct,
+          total: questions.length,
+          percentage: Math.round((correct / questions.length) * 100),
+          results
+        };
+      },
+
+      finishQuiz() {
+        if (this.isTestMode()) {
+          const unanswered = this.userAnswers.filter(a => a === null).length;
+          if (unanswered > 0) {
+            if (!confirm(`${unanswered} unanswered question(s) remaining. Submit anyway?`)) {
+              return;
+            }
+          }
+        }
+
+        this.showResults = true;
+        this.reviewMode = false;
+        this.render();
+      },
+
+      backToResults() {
+        this.showResults = true;
+        this.reviewMode = false;
+        this.render();
+      },
+
+      resetQuiz() {
+        this.selectedQuiz = null;
+        this.currentQuestion = 0;
+        this.userAnswers = [];
+        this.showResults = false;
+        this.checked = false;
+        this.reviewMode = false;
+        this.render();
+      },
+
+      render() {
+        const app = document.getElementById('app');
+
+        if (!this.selectedQuiz) {
+          app.innerHTML = this.renderQuizSelector();
+        } else if (this.showResults) {
+          app.innerHTML = this.renderResults();
+        } else if (this.reviewMode) {
+          app.innerHTML = this.renderReviewQuestion();
+        } else {
+          app.innerHTML = this.renderQuestion();
+        }
+
+        this.attachEventListeners();
+      },
+
+      renderQuizSelector() {
+        const quizzes = Object.keys(quizData).map(key => {
+          const quiz = quizData[key];
+          let displayName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+          // Daha güzel başlıklar
+          if (key === 'temel_sorular') displayName = 'Topic-Based Practice (100 Questions)';
+          if (key.startsWith('deneme_')) {
+            const num = key.split('_')[1];
+            displayName = `Mock Exam ${num} (30 Questions)`;
+          }
+
+          return `
+                        <div class="quiz-card" onclick="QuizApp.selectQuiz('${key}')">
+                            <div class="quiz-card-title">${displayName}</div>
+                            <div class="quiz-card-info">${quiz.questions.length} Questions</div>
+                        </div>
+                    `;
+        }).join('');
+
+        return `
+                    <div class="quiz-selector">
+                        ${quizzes}
+                    </div>
+                `;
+      },
+
+      renderQuestion() {
+        const quiz = quizData[this.selectedQuiz];
+        const question = quiz.questions[this.currentQuestion];
+        const userAnswer = this.userAnswers[this.currentQuestion];
+        const progress = ((this.currentQuestion + 1) / quiz.questions.length) * 100;
+        const isTestMode = this.isTestMode();
+
+        const optionsHtml = question.options.map((option, index) => {
+          let className = 'option';
+          const optionLetter = option.charAt(0);
+
+          if (userAnswer === index) {
+            className += ' selected';
+          }
+
+          // Temel sorularda check butonuna basıldıysa doğru/yanlışı göster
+          if (this.checked && !isTestMode) {
+            className += ' disabled';
+            if (optionLetter === question.correct) {
+              className += ' correct';
+            } else if (userAnswer === index) {
+              className += ' incorrect';
+            }
+          }
+
+          return `
+                        <div class="${className}" data-index="${index}">
+                            ${option}
+                        </div>
+                    `;
+        }).join('');
+
+        const isLastQuestion = this.currentQuestion === quiz.questions.length - 1;
+        const answeredCount = this.userAnswers.filter(a => a !== null).length;
+
+        return `
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+
+                    <div class="question-container">
+                        <div class="question-header">
+                            <span class="question-number">Question ${this.currentQuestion + 1} / ${quiz.questions.length}</span>
+                            ${isTestMode ? `<span style="color: var(--text-secondary);">Answered: ${answeredCount}/${quiz.questions.length}</span>` : ''}
+                        </div>
+
+                        <div class="question-text">${question.question}</div>
+
+                        <div class="options">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <button class="btn btn-secondary" onclick="QuizApp.resetQuiz()">Exit Quiz</button>
+                        ${!isTestMode && this.currentQuestion > 0 ? '<button class="btn btn-secondary" onclick="QuizApp.prevQuestion()">Previous</button>' : ''}
+                        ${!isTestMode && !this.checked ? `<button class="btn btn-primary" onclick="QuizApp.checkAnswers()" ${userAnswer === null ? 'disabled' : ''}>Check Answer</button>` : ''}
+                        ${!isTestMode && this.checked && !isLastQuestion ? '<button class="btn btn-primary" onclick="QuizApp.nextQuestion()">Next Question</button>' : ''}
+                        ${!isTestMode && this.checked && isLastQuestion ? '<button class="btn btn-primary" onclick="QuizApp.finishQuiz()">Finish Quiz</button>' : ''}
+                        ${isTestMode && isLastQuestion ? `<button class="btn btn-primary" onclick="QuizApp.finishQuiz()">Submit Test</button>` : ''}
+                    </div>
+                `;
+      },
+
+      renderReviewQuestion() {
+        const quiz = quizData[this.selectedQuiz];
+        const question = quiz.questions[this.currentQuestion];
+        const userAnswer = this.userAnswers[this.currentQuestion];
+        const scoreData = this.calculateScore();
+        const result = scoreData.results[this.currentQuestion];
+
+        const optionsHtml = question.options.map((option, index) => {
+          let className = 'option disabled';
+          const optionLetter = option.charAt(0);
+
+          if (userAnswer === index) {
+            className += ' selected';
+          }
+
+          if (optionLetter === question.correct) {
+            className += ' correct';
+          } else if (userAnswer === index) {
+            className += ' incorrect';
+          }
+
+          return `
+                        <div class="${className}">
+                            ${option}
+                        </div>
+                    `;
+        }).join('');
+
+        return `
+                    <div class="question-container">
+                        <div class="question-header">
+                            <span class="question-number">Question ${this.currentQuestion + 1} / ${quiz.questions.length}</span>
+                            <span style="color: ${result.isCorrect ? 'var(--correct)' : 'var(--incorrect)'}; font-weight: 600;">
+                                ${result.isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                            </span>
+                        </div>
+
+                        <div class="question-text">${question.question}</div>
+
+                        <div class="options">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <button class="btn btn-secondary" onclick="QuizApp.backToResults()">Back to Results</button>
+                        ${this.currentQuestion > 0 ? '<button class="btn btn-secondary" onclick="QuizApp.goToQuestion(' + (this.currentQuestion - 1) + ')">Previous</button>' : ''}
+                        ${this.currentQuestion < quiz.questions.length - 1 ? '<button class="btn btn-primary" onclick="QuizApp.goToQuestion(' + (this.currentQuestion + 1) + ')">Next</button>' : ''}
+                    </div>
+                `;
+      },
+
+      renderResults() {
+        const score = this.calculateScore();
+        const quiz = quizData[this.selectedQuiz];
+
+        // Save to Backend
+        if (typeof ClientAPI !== 'undefined') {
+          const quizName = this.selectedQuiz.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          ClientAPI.saveGameResult(`Physics: ${quizName}`, `${score.correct}/${score.total} (${score.percentage}%)`);
+        }
+
+        const reviewGridHtml = score.results.map((result, index) => {
+          let className = 'review-item';
+          if (result.userAnswer === null) {
+            className += ' unanswered';
+          } else if (result.isCorrect) {
+            className += ' correct';
+          } else {
+            className += ' incorrect';
+          }
+
+          return `
+                        <div class="${className}" onclick="QuizApp.goToQuestion(${index})">
+                            ${index + 1}
+                        </div>
+                    `;
+        }).join('');
+
+        return `
+                    <div class="results">
+                        <h2 class="results-title">Quiz Complete!</h2>
+                        
+                        <div class="score">${score.percentage}%</div>
+
+                        <div class="score-details">
+                            <div class="score-item">
+                                <div class="score-item-value correct-value">${score.correct}</div>
+                                <div class="score-item-label">Correct</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-item-value incorrect-value">${score.incorrect}</div>
+                                <div class="score-item-label">Incorrect</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-item-value">${score.total}</div>
+                                <div class="score-item-label">Total</div>
+                            </div>
+                        </div>
+
+                        <div class="answer-review">
+                            <div class="review-title">Review Your Answers</div>
+                            <div class="review-grid">
+                                ${reviewGridHtml}
+                            </div>
+                        </div>
+
+                        <div class="controls">
+                            <button class="btn btn-secondary" onclick="QuizApp.resetQuiz()">Back to Menu</button>
+                            <button class="btn btn-primary" onclick="QuizApp.selectQuiz('${this.selectedQuiz}')">Retry Quiz</button>
+                        </div>
+                    </div>
+                `;
+      },
+
+      attachEventListeners() {
+        const options = document.querySelectorAll('.option:not(.disabled)');
+        options.forEach(option => {
+          option.addEventListener('click', (e) => {
+            const index = parseInt(e.currentTarget.dataset.index);
+            this.selectAnswer(index);
+          });
+        });
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      QuizApp.init();
+    });
+  </script>
+  <script src="client-api.js"></script>
+</body>
+
+</html>

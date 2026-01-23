@@ -1,0 +1,314 @@
+/* Level Selection Page Styles */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0A1929;
+    min-height: 100vh;
+    color: var(--dark);
+}
+
+.level-header {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 100%);
+    padding: 15px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.level-header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-2px);
+}
+
+.back-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.game-title {
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    flex: 1;
+    margin: 0;
+}
+
+/* Navigation Buttons */
+.nav-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    font-size: 0;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    width: 32px;
+    height: 32px;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+}
+
+.nav-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.nav-btn span {
+    display: none;
+}
+
+/* Rules Section */
+.rules-section {
+    padding: 60px 0;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rules-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    margin-bottom: 40px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.rule-card {
+    background: #F5F5DC;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.rule-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.rule-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    position: relative;
+}
+
+.rule-icon.red {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+}
+
+.rule-icon.yellow {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    box-shadow: 0 5px 20px rgba(243, 156, 18, 0.4);
+}
+
+.rule-icon.black {
+    background: linear-gradient(135deg, #34495e, #2c3e50);
+    box-shadow: 0 5px 20px rgba(44, 62, 80, 0.4);
+}
+
+.rule-card h3 {
+    font-size: 20px;
+    color: var(--dark);
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.rule-card p {
+    font-size: 15px;
+    color: var(--gray);
+    line-height: 1.6;
+}
+
+.rule-card strong {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* Levels Section */
+.levels-section {
+    padding: 60px 0 100px;
+}
+
+.levels-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.levels-subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px;
+}
+
+.level-button {
+    aspect-ratio: 1;
+    background: #E8E8DD;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.level-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.level-button:hover::before {
+    transform: scaleX(1);
+}
+
+.level-button:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.level-button:active {
+    transform: translateY(-4px) scale(1.02);
+}
+
+.level-number {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.level-label {
+    font-size: 14px;
+    color: var(--gray);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .level-header {
+        padding: 12px 0;
+    }
+
+    .level-header .container {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .back-button {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .game-title {
+        font-size: 16px;
+        width: 100%;
+        order: -1;
+    }
+
+    .nav-buttons {
+        gap: 4px;
+        margin-left: auto;
+    }
+
+    .nav-btn {
+        padding: 6px;
+        width: 28px;
+        height: 28px;
+    }
+
+    .nav-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .rules-title,
+    .levels-title {
+        font-size: 28px;
+    }
+
+    .rules-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .levels-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 15px;
+    }
+
+    .level-number {
+        font-size: 24px;
+    }
+
+    .level-label {
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Backend Verification Runner (Root)</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #0f0;
+        }
+
+        .log {
+            margin-bottom: 5px;
+        }
+
+        .error {
+            color: #f55;
+        }
+
+        .success {
+            color: #5f5;
+        }
+
+        .section {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #fff;
+            border-bottom: 1px solid #555;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Backend Verification Logs (Same Origin)</h1>
+    <div id="logs">Initializing...</div>
+    <div id="status" style="margin-top:20px; font-size:1.2em; border:1px solid #555; padding:10px;">Running...</div>
+
+    <script>
+        // Use relative path or standard localhost
+        const API_URL = 'http://localhost:3000/api';
+        const ADMIN_EMAIL = 'armenu.info@gmail.com';
+        const ADMIN_PASS = 'Bayram17220.';
+
+        const logDiv = document.getElementById('logs');
+        const statusDiv = document.getElementById('status');
+
+        function log(msg, type = 'normal') {
+            const div = document.createElement('div');
+            div.textContent = msg;
+            div.className = 'log ' + type;
+            logDiv.appendChild(div);
+            // console.log(msg); 
+        }
+
+        async function runTests() {
+            log('Starting Verification Suite...', 'section');
+            let adminToken, userToken, testCode;
+
+            try {
+                // 1. Admin Login
+                log('[1] Testing Admin Login...', 'section');
+                const loginRes = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASS })
+                });
+
+                if (!loginRes.ok) {
+                    const txt = await loginRes.text();
+                    throw new Error(`Login failed: ${loginRes.status} ${txt}`);
+                }
+
+                const loginData = await loginRes.json();
+                adminToken = loginData.token;
+                log('✅ Admin Login Successful', 'success');
+
+                // 2. Generate Code
+                log('[2] Testing Batch Code Generation...', 'section');
+                const genRes = await fetch(`${API_URL}/admin/generate-codes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ amount: 5 })
+                });
+                if (!genRes.ok) throw new Error('Generation failed');
+                const genData = await genRes.json();
+                log('✅ Code Generation Successful', 'success');
+
+                // 3. Retrieve Unused Code
+                log('[3] Fetching an Unused Code...', 'section');
+                const codesRes = await fetch(`${API_URL}/admin/codes?page=1`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                if (!codesRes.ok) throw new Error('Fetch codes failed');
+                const codesData = await codesRes.json();
+
+                const unused = codesData.codes.find(c => !c.is_used);
+                if (!unused) throw new Error('No unused codes found');
+                testCode = unused.code;
+                log(`✅ Found Unused Code: ${testCode}`, 'success');
+
+                // 4. Register User
+                log('[4] Testing User Registration with Code...', 'section');
+                const testUserEmail = `browser_test_${Date.now()}@example.com`;
+                const regRes = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        full_name: 'Browser Tester',
+                        email: testUserEmail,
+                        password: 'Password123!',
+                        community_code: testCode
+                    })
+                });
+                if (!regRes.ok) {
+                    const txt = await regRes.text();
+                    throw new Error(`Registration failed: ${txt}`);
+                }
+                const regData = await regRes.json();
+                userToken = regData.token;
+                log(`✅ User Registration Successful (${testUserEmail})`, 'success');
+
+                // 5. Verify Code Used
+                log('[5] Verifying Code Status (Should be USED)...', 'section');
+                const secRes = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        full_name: 'Hacker',
+                        email: `hacker_${Date.now()}@example.com`,
+                        password: '123',
+                        community_code: testCode
+                    })
+                });
+                const secData = await secRes.json();
+                if (!secRes.ok && secData.message && secData.message.includes('already been used')) {
+                    log('✅ Security Check Passed: Code cannot be reused.', 'success');
+                } else {
+                    // If it succeeded (200) OR failed with a different message, that's bad.
+                    if (secRes.ok) throw new Error('Security Check Failed: Reuse WAS allowed!');
+                    throw new Error(`Security Check Failed: Unexpected error ${secData.message}`);
+                }
+
+                // 6. Post Game Score
+                log('[6] Testing Game Score Submission...', 'section');
+                const scoreRes = await fetch(`${API_URL}/results`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        game_name: 'Test Browser Game',
+                        score: '100/100',
+                        level: 5
+                    })
+                });
+                if (!scoreRes.ok) throw new Error('Score save failed');
+                log('✅ Score Saved Successfully', 'success');
+
+                statusDiv.textContent = 'ALL TESTS PASSED';
+                statusDiv.style.color = '#5f5';
+                statusDiv.style.borderColor = '#5f5';
+
+            } catch (err) {
+                log(`❌ ERROR: ${err.message}`, 'error');
+                statusDiv.textContent = 'TESTS FAILED';
+                statusDiv.style.color = '#f55';
+                statusDiv.style.borderColor = '#f55';
+                console.error(err);
+            }
+        }
+
+        runTests();
+    </script>
+</body>
+
+</html>

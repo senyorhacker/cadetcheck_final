@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sözel Bellek Testi</title>
+    <link rel="stylesheet" href="platform.css">
+    <link rel="stylesheet" href="memory-game.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="level-header">
+        <div class="container">
+            <a href="level-select-memory.html?game=verbal-memory" class="back-button">
+                <span>← Seviyeler</span>
+            </a>
+            <h1 class="game-title">Sözel Bellek Testi</h1>
+            <div class="nav-buttons">
+                <a href="level-select-memory.html" class="nav-btn" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+                    Seviyeler
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Game Main -->
+    <main class="memory-main">
+        <div class="container">
+            <!-- Game Info -->
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="info-label">Level</span>
+                    <span class="info-value" id="currentLevel">1</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Soru</span>
+                    <span class="info-value"><span id="currentQuestion">1</span>/10</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Doğru</span>
+                    <span class="info-value correct-text" id="correctCount">0</span>
+                </div>
+            </div>
+
+            <!-- Display Phase -->
+            <div class="phase-container" id="displayPhase">
+                <div class="number-display">
+                    <div class="number-circle">
+                        <span class="number-text" id="displayNumber">5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answer Phase -->
+            <div class="phase-container hidden" id="answerPhase">
+                <div class="answer-area">
+                    <div class="answer-label">Cevabınız:</div>
+                    <div class="answer-input" id="userAnswer">
+                        <!-- User's answer will be displayed here -->
+                    </div>
+                </div>
+
+                <div class="numpad">
+                    <button class="numpad-button" data-number="1">1</button>
+                    <button class="numpad-button" data-number="2">2</button>
+                    <button class="numpad-button" data-number="3">3</button>
+                    <button class="numpad-button" data-number="4">4</button>
+                    <button class="numpad-button" data-number="5">5</button>
+                    <button class="numpad-button" data-number="6">6</button>
+                    <button class="numpad-button" data-number="7">7</button>
+                    <button class="numpad-button" data-number="8">8</button>
+                    <button class="numpad-button" data-number="9">9</button>
+                    <button class="numpad-button numpad-zero" data-number="0">0</button>
+                    <button class="numpad-button numpad-backspace" id="backspaceBtn">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 9l6 6m0-6l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </button>
+                </div>
+
+                <button class="submit-button" id="submitBtn">Cevapla</button>
+            </div>
+
+            <!-- Comparison Phase -->
+            <div class="phase-container hidden" id="comparisonPhase">
+                <div class="comparison-area">
+                    <div class="comparison-row correct-answer">
+                        <span class="comparison-label">Doğru Cevap:</span>
+                        <span class="comparison-value" id="correctAnswer">2 4 5 7 8</span>
+                    </div>
+                    <div class="comparison-row user-answer">
+                        <span class="comparison-label">Cevabınız:</span>
+                        <span class="comparison-value" id="userAnswerDisplay">2 4 5</span>
+                    </div>
+                    <div class="result-indicator" id="resultIndicator">
+                        <span class="result-icon">✗</span>
+                        <span class="result-text">Yanlış</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Score Modal -->
+    <div class="modal hidden" id="scoreModal">
+        <div class="modal-content">
+            <h2>Level <span id="scoreLevel">1</span> Tamamlandı!</h2>
+
+            <div class="score-grid">
+                <div class="score-item">
+                    <div class="score-label">Doğru</div>
+                    <div class="score-value correct" id="modalCorrect">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Yanlış</div>
+                    <div class="score-value incorrect" id="modalIncorrect">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Başarı Oranı</div>
+                    <div class="score-value" id="modalSuccess">0%</div>
+                </div>
+            </div>
+
+            <div class="score-buttons">
+                <button class="action-button" id="nextLevelButton">Sonraki Level</button>
+                <button class="action-button" id="retryButton">Tekrar Dene</button>
+                <button class="action-button secondary" id="backToLevelsButton">Seviye Seçimi</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="client-api.js"></script>
+    <script src="memory-game.js"></script>
+</body>
+
+</html>

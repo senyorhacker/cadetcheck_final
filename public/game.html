@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sürdürülebilir Dikkat Testi</title>
+    <link rel="stylesheet" href="platform.css">
+    <link rel="stylesheet" href="game.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="level-header">
+        <div class="container">
+            <a href="level-select.html?game=sustained-attention" class="back-button">
+                <span>← Seviyeler</span>
+            </a>
+            <h1 class="game-title">Sürdürülebilir Dikkat Testi</h1>
+            <div class="nav-buttons">
+                <a href="level-select.html" class="nav-btn" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+                    Seviyeler
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Game Screen -->
+    <main class="game-main">
+        <div class="container">
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="info-label">Level</span>
+                    <span class="info-value" id="currentLevel">1</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Deneme</span>
+                    <span class="info-value"><span id="currentTrial">1</span>/10</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Doğru</span>
+                    <span class="info-value correct-text" id="correctCount">0</span>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="gameCanvas" width="800" height="600"></canvas>
+                <div class="feedback-overlay hidden" id="feedbackOverlay"></div>
+            </div>
+
+            <div class="button-container">
+                <button class="game-button red-button" id="redButton" data-color="red">
+                    <span class="button-circle red-circle"></span>
+                </button>
+                <button class="game-button black-button" id="blackButton" data-color="black">
+                    <span class="button-circle black-circle"></span>
+                </button>
+                <button class="game-button yellow-button" id="yellowButton" data-color="yellow">
+                    <span class="button-circle yellow-circle"></span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Score Modal -->
+    <div class="modal hidden" id="scoreModal">
+        <div class="modal-content">
+            <h2>Level <span id="scoreLevel">1</span> Tamamlandı!</h2>
+
+            <div class="score-grid">
+                <div class="score-item">
+                    <div class="score-label">Doğru</div>
+                    <div class="score-value correct" id="modalCorrect">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Yanlış</div>
+                    <div class="score-value incorrect" id="modalIncorrect">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Başarı Oranı</div>
+                    <div class="score-value" id="modalSuccess">0%</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Ortalama Tepki Süresi</div>
+                    <div class="score-value" id="modalAvgTime">0ms</div>
+                </div>
+            </div>
+
+            <div class="score-buttons">
+                <button class="action-button" id="nextLevelButton">Sonraki Level</button>
+                <button class="action-button" id="retryButton">Tekrar Dene</button>
+                <button class="action-button secondary" id="backToLevelsButton">Seviye Seçimi</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>
