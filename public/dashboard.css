@@ -667,3 +667,15 @@ body {
         transform: translateY(0);
     }
 }
+
+/* Fix for Select Options Readability */
+select option,
+.form-input option {
+    background-color: #0A1929;
+    color: #FFFFFF;
+}
+
+/* Ensure dropdowns render in dark mode on supported browsers */
+select {
+    color-scheme: dark;
+}
