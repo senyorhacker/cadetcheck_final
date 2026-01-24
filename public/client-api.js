@@ -82,5 +82,27 @@ const ClientAPI = {
         } catch (err) {
             return { success: false, message: err.message };
         }
+    },
+
+    submitFeedback: async function (data) {
+        const token = localStorage.getItem('token');
+        if (!token) return { success: false, message: "Authentication required" };
+
+        try {
+            const res = await fetch(`${this.API_URL}/feedback`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) return { success: true };
+            return { success: false };
+        } catch (err) {
+            console.error("Feedback error:", err);
+            return { success: false };
+        }
     }
 };
