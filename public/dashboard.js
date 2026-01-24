@@ -26,8 +26,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (profileTrigger && profileDropdown) {
         // Update name in trigger if possible
-        const nameSpan = profileTrigger.querySelector('span');
-        if (nameSpan) nameSpan.textContent = user.full_name;
+        // Update name and avatar
+        const profileNameEl = document.getElementById('profileName');
+        const profileAvatarEl = document.getElementById('profileAvatar');
+
+        if (user.full_name) {
+            if (profileNameEl) profileNameEl.textContent = user.full_name;
+
+            if (profileAvatarEl) {
+                const initials = user.full_name
+                    .split(' ')
+                    .map(n => n[0]) // Get first letter of each part
+                    .slice(0, 2)    // Take first 2 parts max
+                    .join('')
+                    .toUpperCase();
+                profileAvatarEl.textContent = initials;
+            }
+        }
 
         profileTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -145,9 +160,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (window.ClientAPI && window.ClientAPI.submitFeedback) {
                     const res = await window.ClientAPI.submitFeedback(data);
                     if (res.success) {
-                        alert("Thank you for your feedback!");
-                        closeModal();
-                        feedbackForm.reset();
+                        // Success UI
+                        const contentDiv = feedbackModal.querySelector('.feedback-content');
+                        if (contentDiv) {
+                            contentDiv.innerHTML = `
+                                <div style="text-align: center; padding: 3rem 1rem;">
+                                    <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Thank You!</h3>
+                                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Your feedback has been successfully submitted.</p>
+                                    <button onclick="window.location.reload()" class="auth-btn" style="max-width: 200px;">Close</button>
+                                </div>
+                            `;
+                        }
                     } else {
                         alert("Failed to submit feedback. Please try again.");
                     }
