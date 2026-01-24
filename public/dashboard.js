@@ -1,5 +1,11 @@
 // Dashboard Logic & Animations
 
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Auth Check
     const token = localStorage.getItem('token');

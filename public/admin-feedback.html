@@ -240,7 +240,10 @@
             } catch (err) {
                 console.error(err);
                 document.getElementById('feedbackTableBody').innerHTML = `
-                    <tr><td colspan="7" style="color: #ef4444; text-align: center;">Error loading feedback. verify admin token.</td></tr>
+                    <tr><td colspan="7" style="color: #ef4444; text-align: center;">
+                        Error loading feedback: ${err.message}<br>
+                        <small>Check console for details.</small>
+                    </td></tr>
                 `;
             }
         }
