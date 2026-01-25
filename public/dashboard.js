@@ -110,6 +110,26 @@ async function loadDashboardStats() {
     if (stats.dailyTrend && stats.dailyTrend.length > 0) {
         initRealChart(stats.dailyTrend);
     }
+
+    // 4. Update History Table
+    if (window.ClientAPI.getUserHistory) {
+        const history = await window.ClientAPI.getUserHistory();
+        const historyTable = document.getElementById('historyTableBody');
+        if (historyTable) {
+            if (history.length === 0) {
+                historyTable.innerHTML = '<tr><td colspan="4" style="padding: 2rem; text-align: center; color: rgba(255,255,255,0.5);">No games played yet.</td></tr>';
+            } else {
+                historyTable.innerHTML = history.map(h => `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;">
+                        <td style="padding: 1rem; font-weight: 500;">${h.game_name}</td>
+                        <td style="padding: 1rem; color: #4A90E2; font-weight: 700;">${h.score}</td>
+                        <td style="padding: 1rem;">${h.level || '-'}</td>
+                        <td style="padding: 1rem; color: rgba(255,255,255,0.5); font-size: 0.9rem;">${new Date(h.played_at).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+    }
 }
 
 // --- Feedback System ---
@@ -181,6 +201,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         alert("Failed to submit feedback. Please try again.");
                     }
+                } else {
+                    console.error("ClientAPI not found");
+                    alert("System error: Feedback service Unavailable.");
                 }
             });
         }

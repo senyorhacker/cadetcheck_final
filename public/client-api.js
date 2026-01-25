@@ -1,4 +1,4 @@
-const ClientAPI = {
+window.ClientAPI = {
     API_URL: '/api',
 
     saveGameResult: async function (gameName, score, level) {
@@ -33,9 +33,6 @@ const ClientAPI = {
         if (!token) return null;
 
         try {
-            // We need a route for this. let's assume /api/results/me/stats or similar
-            // If it doesn't exist, we might need to create it in server/routes/results.js or auth.js
-            // Let's us /api/results/stats which we should verify exists or create.
             const res = await fetch(`${this.API_URL}/results/stats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -44,6 +41,21 @@ const ClientAPI = {
         } catch (err) {
             console.error('Error fetching stats:', err);
             return null;
+        }
+    },
+
+    getUserHistory: async function () {
+        const token = localStorage.getItem('token');
+        if (!token) return [];
+        try {
+            const res = await fetch(`${this.API_URL}/results/history`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) return await res.json();
+            return [];
+        } catch (err) {
+            console.error('Error fetching history:', err);
+            return [];
         }
     },
 

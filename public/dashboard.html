@@ -109,6 +109,29 @@
             </div>
         </div>
 
+        <!-- Game History Table -->
+        <h2 style="font-family: 'DM Serif Display', serif; font-size: 1.5rem; margin-bottom: 1rem; margin-top: 2rem;">
+            Game History</h2>
+        <div
+            style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; overflow-x: auto; margin-bottom: 3rem;">
+            <table style="width: 100%; border-collapse: collapse; color: var(--light);">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left;">
+                        <th style="padding: 1rem; color: var(--text-muted); font-weight: 600;">Game</th>
+                        <th style="padding: 1rem; color: var(--text-muted); font-weight: 600;">Score</th>
+                        <th style="padding: 1rem; color: var(--text-muted); font-weight: 600;">Level/Detail</th>
+                        <th style="padding: 1rem; color: var(--text-muted); font-weight: 600;">Date</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <tr>
+                        <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading
+                            history...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <!-- Games Grid -->
         <h2 style="font-family: 'DM Serif Display', serif; font-size: 2rem; margin-bottom: 2rem;">PACE Tests</h2>
         <div class="games-grid">

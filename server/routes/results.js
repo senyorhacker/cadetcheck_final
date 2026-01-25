@@ -59,7 +59,7 @@ router.get('/stats', async (req, res) => {
         // 5. Daily Trend (Last 7 Days)
         const trendRes = await db.query(
             `SELECT DATE(played_at) as date, 
-                    AVG(CAST(NULLIF(regexp_replace(score::text, '[^0-9.]', '', 'g'), '') AS FLOAT)) as avg_score 
+                    AVG(COALESCE(SUBSTRING(score FROM '(\d+)%'), SUBSTRING(score FROM '^(\d+)$'), '0')::FLOAT) as avg_score 
              FROM results 
              WHERE user_id = $1 
              GROUP BY DATE(played_at) 
@@ -80,6 +80,21 @@ router.get('/stats', async (req, res) => {
 
     } catch (err) {
         console.error("User Stats Error:", err);
+        res.status(500).json({ message: "Database error" });
+    }
+});
+
+// Get Full History
+router.get('/history', async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const historyRes = await db.query(
+            'SELECT game_name, score, level, played_at FROM results WHERE user_id = $1 ORDER BY played_at DESC LIMIT 50',
+            [userId]
+        );
+        res.json(historyRes.rows);
+    } catch (err) {
+        console.error("History Error:", err);
         res.status(500).json({ message: "Database error" });
     }
 });
