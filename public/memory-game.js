@@ -6,9 +6,10 @@ const CONFIG = {
     // Level configurations
     LEVEL_CONFIG: {
         '1-5': { targetCount: 5, displayTime: 2000, answerTime: 10000 },
-        '6-10': { targetCount: 8, displayTime: 1600, answerTime: 10000 },
-        '11-12': { targetCount: 9, displayTime: 1400, answerTime: 8000 },
-        '13-15': { targetCount: 10, displayTime: 1400, answerTime: 8000 }
+        '6-8': { targetCount: 8, displayTime: 1600, answerTime: 10000 },
+        '9-10': { targetCount: 8, displayTime: 1200, answerTime: 10000 },
+        '11-12': { targetCount: 9, displayTime: 1000, answerTime: 8000 },
+        '13-15': { targetCount: 10, displayTime: 1000, answerTime: 8000 }
     },
 
     GAP_TIME: 500 // Time between numbers
