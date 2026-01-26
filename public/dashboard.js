@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                         }
                     } else {
-                        alert("Failed to submit feedback. Please try again.");
+                        alert("Failed to submit feedback: " + (res.message || "Unknown error"));
                     }
                 } else {
                     console.error("ClientAPI not found");

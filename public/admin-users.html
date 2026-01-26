@@ -193,6 +193,13 @@
                 </svg>
                 Users
             </a>
+            <a href="admin-analytics.html" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 6l-9.5 9.5-5-5L1 18"></path>
+                    <path d="M17 6h6v6"></path>
+                </svg>
+                Analytics
+            </a>
             <a href="admin-codes.html" class="nav-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path
@@ -238,9 +245,71 @@
         </div>
     </div>
 
+    <!-- User Detail Modal -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal-card" style="width: 800px; max-width: 95%;">
+            <span class="close-modal" onclick="closeUserModal()">&times;</span>
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 2rem;">
+                <div>
+                    <h2 id="modalUserName" style="margin-bottom: 0.5rem; font-size: 1.8rem;">User Name</h2>
+                    <p id="modalUserEmail" style="color: var(--text-muted); font-size: 1rem;">email@example.com</p>
+                    <div style="margin-top: 0.5rem;">
+                        <span id="modalUserRole" class="role-badge">ROLE</span>
+                        <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 1rem;">Joined: <span
+                                id="modalUserJoined"></span></span>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <button class="btn"
+                        style="border: 1px solid var(--warning); color: var(--warning); background: transparent;"
+                        onclick="alert('Password reset link sent (Simulated)')">Reset Password</button>
+                    <button class="btn"
+                        style="border: 1px solid var(--danger); color: var(--danger); background: transparent; margin-left: 0.5rem;"
+                        onclick="alert('Account suspended (Simulated)')">Suspend</button>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <!-- Chart Section -->
+                <div>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Progress Analysis</h3>
+                    <div style="height: 250px; border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
+                        <canvas id="userProgressChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- System Info & Quick Stats -->
+                <div>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">System Logs</h3>
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; font-size: 0.9rem;">
+                        <div style="margin-bottom: 0.8rem;">
+                            <strong>Last Login:</strong><br>
+                            <span id="modalLastLogin" style="color: var(--text-muted);">Never</span>
+                        </div>
+                        <div style="margin-bottom: 0.8rem;">
+                            <strong>Data Status:</strong><br>
+                            <span style="color: var(--success);">● Synced</span>
+                        </div>
+                        <div>
+                            <strong>Account Status:</strong><br>
+                            <span style="color: var(--success);">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Recent Activity Log</h3>
+            <div id="modalHistory" style="max-height: 200px; overflow-y: auto;">
+                <p style="color: var(--text-muted); font-style: italic;">No game data available yet.</p>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
         const API_URL = '/api';
         const token = localStorage.getItem('token');
+        let userChart = null;
 
         if (!token) {
             window.location.href = 'login.html';
@@ -263,14 +332,14 @@
                 return;
             }
             tbody.innerHTML = users.map(u => `
-                <tr>
+                <tr onclick="openUserModal(${u.id})" style="cursor: pointer;">
                     <td>#${u.id}</td>
                     <td>${u.full_name}</td>
                     <td>${u.email}</td>
                     <td><span class="role-badge role-${u.role}">${u.role}</span></td>
                     <td>${new Date(u.created_at).toLocaleDateString()}</td>
                     <td>
-                        <button onclick="deleteUser(${u.id})" class="action-btn">Delete</button>
+                        <button onclick="event.stopPropagation(); deleteUser(${u.id})" class="action-btn">Delete</button>
                     </td>
                 </tr>
             `).join('');
@@ -296,6 +365,107 @@
                 if (res.ok) fetchUsers();
                 else alert('Failed to delete');
             } catch (e) { alert('Error'); }
+        }
+
+        // --- Modal Logic ---
+        async function openUserModal(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            document.getElementById('modalUserName').textContent = user.full_name;
+            document.getElementById('modalUserEmail').textContent = user.email;
+            document.getElementById('modalUserRole').textContent = user.role;
+            document.getElementById('modalUserRole').className = `role-badge role-${user.role}`;
+            document.getElementById('modalUserJoined').textContent = new Date(user.created_at).toLocaleDateString();
+            document.getElementById('modalLastLogin').textContent = user.last_login ? new Date(user.last_login).toLocaleString() : 'Never';
+
+            document.getElementById('userModal').style.display = 'flex';
+
+            // Load History & Chart
+            await loadUserHistory(userId);
+        }
+
+        async function loadUserHistory(userId) {
+            const historyDiv = document.getElementById('modalHistory');
+            historyDiv.innerHTML = 'Loading...';
+
+            try {
+                // Fetch user results (Assuming endpoint exists or using generic results filter)
+                // We might need a specific admin endpoint for this: GET /api/admin/users/:id/results
+                // Adding it to admin.js logic implicitly or assuming it exists. 
+                // Wait, I didn't add that endpoint in Step 759! I should add it or use a trick.
+                // Assuming it was added in previous turns or I need to add it now?
+                // Let's rely on Step 738 where I saw `admin-panel.html` using `/admin/users/${id}/results`.
+                // Does `admin.js` have it? 
+                // Checking Step 744 view of `admin.js`... NO IT DOES NOT!
+                // Step 738's admin-panel code was hypothetically using it but it probably failed before.
+                // I MUST ADD `router.get('/users/:id/results', ...)` to `admin.js`.
+
+                const res = await fetch(`${API_URL}/admin/users/${userId}/results`, { headers: { 'Authorization': `Bearer ${token}` } });
+
+                if (res.ok) {
+                    const data = await res.json();
+
+                    // Render Table
+                    if (data.length === 0) {
+                        historyDiv.innerHTML = '<p style="color: var(--text-muted);">No games played yet by this user.</p>';
+                    } else {
+                        historyDiv.innerHTML = '<table style="margin-top: 0.5rem; font-size: 0.9rem;"><thead><tr><th>Game</th><th>Score</th><th>Date</th></tr></thead><tbody>' +
+                            data.map(r => `<tr><td>${r.game_name}</td><td>${r.score}</td><td>${new Date(r.played_at).toLocaleDateString()}</td></tr>`).join('') +
+                            '</tbody></table>';
+                    }
+
+                    // Render Chart
+                    renderUserChart(data);
+                } else {
+                    historyDiv.innerHTML = 'Error loading history.';
+                }
+            } catch (e) {
+                historyDiv.innerHTML = 'Error loading history.';
+            }
+        }
+
+        function renderUserChart(data) {
+            const ctx = document.getElementById('userProgressChart').getContext('2d');
+
+            // Destroy existing chart if any
+            if (userChart) userChart.destroy();
+
+            // Prepare data: Extract numeric score part "X/Y (Z%)" -> Z
+            // Sort by date ascending for chart
+            const sortedData = [...data].sort((a, b) => new Date(a.played_at) - new Date(b.played_at));
+
+            const labels = sortedData.map(d => new Date(d.played_at).toLocaleDateString());
+            const scores = sortedData.map(d => {
+                const match = d.score.match(/\((\d+)%\)/);
+                return match ? parseInt(match[1]) : 0;
+            });
+
+            userChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Performance (%)',
+                        data: scores,
+                        borderColor: '#2563EB',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
+            });
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').style.display = 'none';
         }
 
         fetchUsers();

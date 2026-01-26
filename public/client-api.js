@@ -111,7 +111,9 @@ window.ClientAPI = {
             });
 
             if (res.ok) return { success: true };
-            return { success: false };
+            const errBody = await res.json();
+            console.error("Feedback failed:", errBody);
+            return { success: false, message: errBody.message || "Server Error" };
         } catch (err) {
             console.error("Feedback error:", err);
             return { success: false };

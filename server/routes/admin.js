@@ -19,6 +19,72 @@ router.get('/users', async (req, res) => {
     }
 });
 
+// Get User Results
+router.get('/users/:id/results', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await db.query('SELECT game_name, score, level, played_at FROM results WHERE user_id = $1 ORDER BY played_at DESC', [id]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Fetch results failed" });
+    }
+});
+
+// Get Stats
+router.get('/stats', async (req, res) => {
+    try {
+        const usersCount = await db.query('SELECT COUNT(*) FROM users');
+        const gamesCount = await db.query('SELECT COUNT(*) FROM results');
+
+        res.json({
+            totalUsers: usersCount.rows[0].count,
+            totalGames: gamesCount.rows[0].count
+        });
+    } catch (err) {
+        console.error('Stats Error:', err);
+        res.status(500).json({ message: "Stats failure" });
+    }
+});
+
+// Analytics: Game Performance
+router.get('/analytics/games', async (req, res) => {
+    try {
+        // We perform basic averaging. Since scores are strings "X/Y (Z%)", 
+        // extracting percentage needs regex similar to dashboard.
+        // Postgres Regex: substring(score from '\\((\\d+)%\\)')
+        const query = `
+            SELECT game_name, 
+                   COUNT(*) as play_count,
+                   AVG(COALESCE(SUBSTRING(score FROM '\\((\\d+)%\\)')::int, 0)) as avg_score
+            FROM results
+            GROUP BY game_name
+            ORDER BY avg_score DESC
+        `;
+        const result = await db.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Game Analytics Error:", err);
+        res.status(500).json({ message: "Analytics Error" });
+    }
+});
+
+// Analytics: Feedback Sentiment
+router.get('/analytics/feedback', async (req, res) => {
+    try {
+        const query = `
+            SELECT general_rating, COUNT(*) as count
+            FROM feedback
+            GROUP BY general_rating
+        `;
+        const result = await db.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Feedback Analytics Error:", err);
+        res.status(500).json({ message: "Analytics Error" });
+    }
+});
+
 // Delete user
 router.delete('/users/:id', async (req, res) => {
     const { id } = req.params;
