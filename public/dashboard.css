@@ -485,22 +485,55 @@ body {
     box-shadow: 0 10px 40px rgba(255, 107, 53, 0.2);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
     .charts-grid {
         grid-template-columns: 1fr;
     }
+    
+    .chart-card {
+        height: auto;
+        min-height: 350px;
+    }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+
     .dashboard-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1.5rem;
+        margin-bottom: 2rem;
     }
 
     .user-profile-trigger {
         width: 100%;
         justify-content: space-between;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2x2 grid on Tablet/Large Phone */
+        gap: 1rem;
+    }
+
+    .games-grid {
+        grid-template-columns: 1fr; /* Stack games on mobile for better view */
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr; /* 1 column on small phones */
+    }
+
+    .auth-card {
+        padding: 1.5rem;
+    }
+
+    .chart-card {
+        padding: 1rem;
     }
 }
 

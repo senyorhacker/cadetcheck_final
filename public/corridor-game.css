@@ -498,3 +498,23 @@ body {
         padding: 20px;
     }
 }
+
+@media (max-width: 480px) {
+    .cities-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .airport-name {
+        font-size: 24px;
+    }
+
+    .corridor-number {
+        width: 60px;
+        font-size: 13px;
+    }
+
+    .corridor-plane {
+        display: none;
+        /* Hide plane icon on small screens to save space */
+    }
+}

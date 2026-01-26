@@ -420,9 +420,11 @@ body {
 /* Responsive - Mobile */
 @media (max-width: 768px) {
     .reaction-area {
-        height: 300px;
+        height: 40vh;
+        /* Adjust based on viewport height */
+        min-height: 250px;
         max-width: 100%;
-        margin: 40px auto 20px;
+        margin: 20px auto 20px;
     }
 
     .shape.circle {

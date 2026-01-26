@@ -425,7 +425,7 @@
 
     @media (max-width: 768px) {
       .container {
-        padding: 1.5rem 1rem;
+        padding: 1rem;
       }
 
       .logo {
@@ -446,10 +446,29 @@
 
       .btn {
         width: 100%;
+        padding: 0.8rem;
       }
 
       .review-grid {
         grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo {
+        font-size: 2rem;
+      }
+
+      .question-text {
+        font-size: 1rem;
+      }
+
+      .option {
+        padding: 1rem;
+      }
+
+      .score {
+        font-size: 3rem;
       }
     }
   </style>

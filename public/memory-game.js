@@ -86,12 +86,22 @@ function init() {
 
 function getLevelConfig(level) {
     if (level <= 5) return CONFIG.LEVEL_CONFIG['1-5'];
-    if (level <= 10) return CONFIG.LEVEL_CONFIG['6-10'];
+    if (level <= 8) return CONFIG.LEVEL_CONFIG['6-8'];
+    if (level <= 10) return CONFIG.LEVEL_CONFIG['9-10'];
     if (level <= 12) return CONFIG.LEVEL_CONFIG['11-12'];
     return CONFIG.LEVEL_CONFIG['13-15'];
 }
 
+// Timeout management
+let activeTimeouts = [];
+
+function clearAllTimeouts() {
+    activeTimeouts.forEach(id => clearTimeout(id));
+    activeTimeouts = [];
+}
+
 function startQuestion() {
+    clearAllTimeouts(); // Stop any running sequences
     currentQuestion++;
     updateQuestionDisplay();
 
@@ -158,24 +168,28 @@ function displaySequence() {
     function showNext() {
         if (index >= question.sequence.length) {
             // Sequence done, move to answer phase
-            setTimeout(() => {
+            const id = setTimeout(() => {
                 startAnswerPhase();
             }, CONFIG.GAP_TIME);
+            activeTimeouts.push(id);
             return;
         }
 
         // Show number
         elements.displayNumber.textContent = question.sequence[index];
 
-        setTimeout(() => {
+        const displayId = setTimeout(() => {
             // Hide number (blank)
             elements.displayNumber.textContent = '';
 
-            setTimeout(() => {
+            const gapId = setTimeout(() => {
                 index++;
                 showNext();
             }, CONFIG.GAP_TIME);
+            activeTimeouts.push(gapId);
         }, config.displayTime);
+
+        activeTimeouts.push(displayId);
     }
 
     showNext();
@@ -308,13 +322,14 @@ function showComparison(isCorrect) {
 
     // Auto-proceed to next question
     const comparisonTime = currentLevel <= 10 ? 10000 : 8000;
-    setTimeout(() => {
+    const compId = setTimeout(() => {
         if (currentQuestion >= CONFIG.QUESTIONS_PER_LEVEL) {
             endLevel();
         } else {
             startQuestion();
         }
     }, comparisonTime);
+    activeTimeouts.push(compId);
 }
 
 function endLevel() {

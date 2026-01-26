@@ -122,74 +122,104 @@
             width: 100% !important;
             height: 100% !important;
         }
+
+        /* Mobile Sidebar (Icon Only) */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                padding: 1rem 0.5rem;
+            }
+
+            .sidebar .brand {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                padding: 1.5rem;
+            }
+
+            .nav-item {
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
+                font-size: 0.65rem;
+                /* Tiny text below icon */
+                padding: 0.8rem 0.2rem;
+            }
+
+            .nav-item svg {
+                margin-right: 0;
+                margin-bottom: 4px;
+                width: 24px;
+                height: 24px;
+            }
+
+            .header {
+                margin-bottom: 1.5rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+        }
     </style>
+
 </head>
 
 <body>
-
     <div class="sidebar">
         <div class="brand">CADETCHECK</div>
-        <nav>
-            <a href="admin-panel.html" class="nav-item">Dashboard</a>
-            <a href="admin-users.html" class="nav-item">Users</a>
-            <a href="admin-codes.html" class="nav-item">Codes</a>
-            <a href="admin-feedback.html" class="nav-item">Feedback</a>
-            <a href="admin-analytics.html" class="nav-item active">Analytics</a>
-        </nav>
+        <nav><a href="admin-panel.html" class="nav-item">Dashboard</a><a href="admin-users.html"
+                class="nav-item">Users</a><a href="admin-codes.html" class="nav-item">Codes</a><a
+                href="admin-feedback.html" class="nav-item">Feedback</a><a href="admin-analytics.html"
+                class="nav-item active">Analytics</a></nav>
     </div>
-
     <div class="main-content">
         <div class="header">
             <h1 class="page-title">Professional Analytics</h1>
-            <p style="color: var(--text-muted); font-size: 1.1rem;">In-depth analysis of user performance, game
-                popularity, and system health.</p>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">In-depth analysis of user performance,
+                game popularity,
+                and system health.</p>
         </div>
-
         <div class="charts-grid">
-            <!-- Game Performance (Bar Chart) - Full Width -->
-            <div class="chart-card full">
-                <div class="chart-header">
-                    <div class="chart-title">Game Success Rates (Avg Score Comparison)</div>
-                    <div style="font-size: 0.9rem; color: var(--text-muted);">Target: > 70%</div>
-                </div>
-                <div style="position: relative; height: 350px; width: 100%;">
-                    <canvas id="gameChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Feedback Sentiment (Doughnut) -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <div class="chart-title">Happiness Barometer</div>
-                    <div id="averageRatingDisplay"
-                        style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">0.0 / 5</div>
-                </div>
-                <div style="position: relative; height: 300px; display: flex; justify-content: center;">
-                    <canvas id="feedbackChart"></canvas>
-                    <!-- Center label for doughnut -->
-                    <div
-                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
-                        <div style="font-size: 0.9rem; color: var(--text-muted);">Total Feedback</div>
-                        <div id="totalFeedbackCount" style="font-size: 1.2rem; font-weight: 700;">0</div>
+            < !-- Game Performance (Bar Chart) - Full Width -->
+                <div class="chart-card full">
+                    <div class="chart-header">
+                        <div class="chart-title">Game Success Rates (Avg Score Comparison)</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted);">Target:>70%</div>
                     </div>
+                    <div style="position: relative; height: 350px; width: 100%;"><canvas id="gameChart"></canvas></div>
                 </div>
-            </div>
-
-            <!-- Play Count (Pie) -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <div class="chart-title">Game Popularity (Total Plays)</div>
-                    <div id="totalPlaysDisplay" style="font-size: 0.9rem; color: var(--accent);">Total: 0</div>
-                </div>
-                <div style="position: relative; height: 300px;">
-                    <canvas id="playsChart"></canvas>
-                </div>
-            </div>
+                < !-- Feedback Sentiment (Doughnut) -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Happiness Barometer</div>
+                            <div id="averageRatingDisplay"
+                                style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">0.0 / 5</div>
+                        </div>
+                        <div style="position: relative; height: 300px; display: flex; justify-content: center;"><canvas
+                                id="feedbackChart"></canvas>
+                            < !-- Center label for doughnut -->
+                                <div
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Total Feedback</div>
+                                    <div id="totalFeedbackCount" style="font-size: 1.2rem; font-weight: 700;">0</div>
+                                </div>
+                        </div>
+                    </div>
+                    < !-- Play Count (Pie) -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">Game Popularity (Total Plays)</div>
+                                <div id="totalPlaysDisplay" style="font-size: 0.9rem; color: var(--accent);">Total: 0
+                                </div>
+                            </div>
+                            <div style="position: relative; height: 300px;"><canvas id="playsChart"></canvas></div>
+                        </div>
         </div>
     </div>
-
-    <script>
-        const API_URL = '/api';
+    <script>const API_URL = '/api';
         const token = localStorage.getItem('token');
 
         if (!token) window.location.href = 'login.html';
@@ -205,10 +235,34 @@
                 initEmptyCharts();
 
                 // Fetch real data
-                const gameRes = await fetch(`${API_URL}/admin/analytics/games`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const gameRes = await fetch(`$ {
+                        API_URL
+                    }
+
+                    /admin/analytics/games`, {
+                    headers: {
+                        'Authorization': `Bearer $ {
+                            token
+                        }
+
+                        `
+                    }
+                });
                 const gameData = await gameRes.json();
 
-                const feedRes = await fetch(`${API_URL}/admin/analytics/feedback`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const feedRes = await fetch(`$ {
+                    API_URL
+                }
+
+                /admin/analytics/feedback`, {
+                    headers: {
+                        'Authorization': `Bearer $ {
+                        token
+                    }
+
+                    `
+                    }
+                });
                 const feedData = await feedRes.json();
 
                 // Update charts with real data
@@ -216,12 +270,16 @@
                 updatePlaysChart(gameData);
                 updateFeedbackChart(feedData);
 
-            } catch (err) {
+            }
+
+            catch (err) {
                 console.error("Analytics Load Error:", err);
             }
         }
 
-        let gameChartInstance, playsChartInstance, feedbackChartInstance;
+        let gameChartInstance,
+            playsChartInstance,
+            feedbackChartInstance;
 
         function initEmptyCharts() {
             // Placeholder initialization if desired, or we just init charts in update functions.
@@ -241,7 +299,9 @@
 
             new Chart(ctx, {
                 type: 'bar', // Horizontal bar is often better for long names, but 'bar' is vertical. Let's stick to vertical or use 'indexAxis: y'
+
                 data: {
+
                     labels: labels,
                     datasets: [{
                         label: 'Avg Score %',
@@ -249,14 +309,23 @@
                         backgroundColor: gradient,
                         borderRadius: 8,
                         barThickness: 30,
-                    }]
-                },
+                    }
+
+                    ]
+                }
+
+                ,
                 options: {
                     indexAxis: 'y', // Horizontal bars
+
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            display: false
+                        }
+
+                        ,
                         tooltip: {
                             backgroundColor: '#0F172A',
                             titleColor: '#f8fafc',
@@ -264,15 +333,24 @@
                             borderColor: '#334155',
                             borderWidth: 1
                         }
-                    },
+                    }
+
+                    ,
                     scales: {
                         x: {
+
                             beginAtZero: true,
                             max: 100,
-                            grid: { color: '#334155' }
-                        },
+                            grid: {
+                                color: '#334155'
+                            }
+                        }
+
+                        ,
                         y: {
-                            grid: { display: false }
+                            grid: {
+                                display: false
+                            }
                         }
                     }
                 }
@@ -284,27 +362,47 @@
             const labels = data.map(d => d.game_name);
             const values = data.map(d => d.play_count);
             const totalPlays = values.reduce((a, b) => parseInt(a) + parseInt(b), 0);
-            document.getElementById('totalPlaysDisplay').innerText = `Total Plays: ${totalPlays}`;
+
+            document.getElementById('totalPlaysDisplay').innerText = `Total Plays: $ {
+                totalPlays
+            }
+
+            `;
 
             // Professional Colors
-            const colors = ['#38bdf8', '#818cf8', '#34d399', '#f472b6', '#fbbf24'];
+            const colors = ['#38bdf8',
+                '#818cf8',
+                '#34d399',
+                '#f472b6',
+                '#fbbf24'];
 
             new Chart(ctx, {
+
                 type: 'pie',
                 data: {
+
                     labels: labels,
                     datasets: [{
                         data: values,
                         backgroundColor: colors,
                         borderWidth: 0,
                         hoverOffset: 10
-                    }]
-                },
+                    }
+
+                    ]
+                }
+
+                ,
                 options: {
+
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'right', labels: { boxWidth: 15 } }
+                        legend: {
+                            position: 'right', labels: {
+                                boxWidth: 15
+                            }
+                        }
                     }
                 }
             });
@@ -314,7 +412,11 @@
             const ctx = document.getElementById('feedbackChart').getContext('2d');
 
             // Map ratings
-            const labelsMap = { 'Very Good': '#10B981', 'Good': '#34D399', 'Average': '#FBBF24', 'Poor': '#EF4444' };
+            const labelsMap = {
+                'Very Good': '#10B981', 'Good': '#34D399', 'Average': '#FBBF24', 'Poor': '#EF4444'
+            }
+
+                ;
             const labels = data.map(d => d.general_rating);
             const values = data.map(d => parseInt(d.count));
             const colors = labels.map(l => labelsMap[l] || '#94a3b8');
@@ -325,6 +427,7 @@
             // Calculate roughly AVG rating (5 for very good, 1 for poor)
             // Need a mapper
             let weightedSum = 0;
+
             data.forEach(d => {
                 let w = 0;
                 if (d.general_rating === 'Very Good') w = 5;
@@ -334,11 +437,18 @@
                 weightedSum += w * parseInt(d.count);
             });
             const avg = total > 0 ? (weightedSum / total).toFixed(1) : 0;
-            document.getElementById('averageRatingDisplay').innerText = `${avg} / 5`;
+
+            document.getElementById('averageRatingDisplay').innerText = `$ {
+                avg
+            }
+
+            / 5`;
 
             new Chart(ctx, {
+
                 type: 'doughnut',
                 data: {
+
                     labels: labels,
                     datasets: [{
                         data: values,
@@ -346,13 +456,22 @@
                         borderWidth: 0,
                         hoverOffset: 5,
                         cutout: '70%'
-                    }]
-                },
+                    }
+
+                    ]
+                }
+
+                ,
                 options: {
+
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20 } }
+                        legend: {
+                            position: 'bottom', labels: {
+                                boxWidth: 12, padding: 20
+                            }
+                        }
                     }
                 }
             });
