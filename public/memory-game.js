@@ -120,43 +120,64 @@ function startQuestion() {
 function generateSequence() {
     const config = getLevelConfig(currentLevel);
     const targetCount = config.targetCount;
-
     // Total numbers to show (target + extra 4-8)
     const extraNumbers = 4 + Math.floor(Math.random() * 5);
     const totalNumbers = targetCount + extraNumbers;
 
-    let sequence = [];
-    let correctAnswer = [];
+    // Generate sequence iteratively to prevent recursion issues
+    let attempts = 0;
+    const maxAttempts = 1000;
 
-    // First number
-    let prev = Math.floor(Math.random() * 10);
-    sequence.push(prev);
-    correctAnswer.push(prev);
+    while (attempts < maxAttempts) {
+        attempts++;
+        let sequence = [];
+        let correctAnswer = [];
 
-    // Generate rest
-    for (let i = 1; i < totalNumbers; i++) {
-        let num = Math.floor(Math.random() * 10);
-        sequence.push(num);
+        // First number
+        let prev = Math.floor(Math.random() * 10);
+        sequence.push(prev);
+        correctAnswer.push(prev);
 
-        if (num > prev) {
-            correctAnswer.push(num);
+        // Generate rest
+        for (let i = 1; i < totalNumbers; i++) {
+            let num = Math.floor(Math.random() * 10);
+            sequence.push(num);
+
+            if (num > prev) {
+                correctAnswer.push(num);
+            }
+            prev = num;
         }
-        prev = num;
+
+        // Validate constraints
+        // 1. Must satisfy minimum target count
+        // 2. Must not exceed target count + 2 (too easy/hard?) - keeping original logic: "if > target+2 retry"
+        if (correctAnswer.length >= targetCount && correctAnswer.length <= targetCount + 2) {
+            // Success!
+            // Trim to exact target count
+            correctAnswer = correctAnswer.slice(0, targetCount);
+            question.sequence = sequence;
+            question.correctAnswer = correctAnswer;
+            return;
+        }
     }
 
-    // If we got more correct answers than needed, regenerate
-    if (correctAnswer.length > targetCount + 2) {
-        return generateSequence();
+    // Fallback if random generation fails (extremely unlikely with 1000 attempts)
+    // Create a deterministic sequence that passes
+    let sequence = [1];
+    let correctAnswer = [1];
+    let prev = 1;
+    for (let i = 0; i < targetCount - 1; i++) {
+        let next = prev + 1;
+        if (next > 9) next = 0;
+        sequence.push(next);
+        correctAnswer.push(next); // This satisfies > prev if we keep it < 10
+        prev = next;
     }
-
-    // If we got fewer than target, regenerate
-    if (correctAnswer.length < targetCount) {
-        return generateSequence();
+    // Fill rest with smaller numbers
+    while (sequence.length < totalNumbers) {
+        sequence.push(0);
     }
-
-    // Trim to exact target count
-    correctAnswer = correctAnswer.slice(0, targetCount);
-
     question.sequence = sequence;
     question.correctAnswer = correctAnswer;
 }
