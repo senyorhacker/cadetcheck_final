@@ -5,11 +5,11 @@ const CONFIG = {
 
     // Level configurations
     LEVEL_CONFIG: {
-        '1-5': { targetCount: 5, displayTime: 2000, answerTime: 10000 },
-        '6-8': { targetCount: 8, displayTime: 1600, answerTime: 10000 },
+        '1-4': { targetCount: 6, displayTime: 2000, answerTime: 10000 },
+        '5-8': { targetCount: 7, displayTime: 1600, answerTime: 10000 },
         '9-10': { targetCount: 8, displayTime: 1200, answerTime: 10000 },
-        '11-12': { targetCount: 9, displayTime: 1000, answerTime: 8000 },
-        '13-15': { targetCount: 10, displayTime: 1000, answerTime: 8000 }
+        '11-13': { targetCount: 9, displayTime: 1000, answerTime: 8000 },
+        '14-15': { targetCount: 10, displayTime: 1000, answerTime: 8000 }
     },
 
     GAP_TIME: 500 // Time between numbers
@@ -101,11 +101,11 @@ function init() {
 }
 
 function getLevelConfig(level) {
-    if (level <= 5) return CONFIG.LEVEL_CONFIG['1-5'];
-    if (level <= 8) return CONFIG.LEVEL_CONFIG['6-8'];
+    if (level <= 4) return CONFIG.LEVEL_CONFIG['1-4'];
+    if (level <= 8) return CONFIG.LEVEL_CONFIG['5-8'];
     if (level <= 10) return CONFIG.LEVEL_CONFIG['9-10'];
-    if (level <= 12) return CONFIG.LEVEL_CONFIG['11-12'];
-    return CONFIG.LEVEL_CONFIG['13-15'];
+    if (level <= 13) return CONFIG.LEVEL_CONFIG['11-13'];
+    return CONFIG.LEVEL_CONFIG['14-15'];
 }
 
 // Timeout management
@@ -274,9 +274,7 @@ function showPhase(phase) {
 function addNumber(num) {
     if (!question.isAnswering) return;
 
-    const config = getLevelConfig(currentLevel);
-    if (question.userAnswer.length >= config.targetCount) return;
-
+    // input limit restriction removed as per user request
     question.userAnswer.push(num);
     updateUserAnswerDisplay();
 }
