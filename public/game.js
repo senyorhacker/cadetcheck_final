@@ -203,7 +203,10 @@ function generateTrial() {
             trial.expectedButton = 'black';
         } else {
             const matchingBall = trial.balls.find(b => b.color === trial.lineColor);
-            trial.expectedTime = Math.abs((lineX - matchingBall.x) / matchingBall.vx) * 1000;
+            // TARGET: Exact center of ball aligns with the vertical line
+            // reactionTime = pressTime - timeWhenCenterCrossesLine
+            const distance = lineX - matchingBall.x;
+            trial.expectedTime = Math.abs(distance / matchingBall.vx) * 1000;
             trial.expectedButton = trial.lineColor;
         }
     }
