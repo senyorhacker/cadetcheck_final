@@ -182,38 +182,42 @@ function generateSequence() {
     question.correctAnswer = correctAnswer;
 }
 
-function displaySequence() {
+async function displaySequence() {
     const config = getLevelConfig(currentLevel);
-    let index = 0;
 
-    function showNext() {
-        if (index >= question.sequence.length) {
-            // Sequence done, move to answer phase
-            const id = setTimeout(() => {
-                startAnswerPhase();
-            }, CONFIG.GAP_TIME);
-            activeTimeouts.push(id);
-            return;
-        }
+    // Safety check for sequence
+    if (!question.sequence || question.sequence.length === 0) {
+        console.error("No sequence to display");
+        startAnswerPhase();
+        return;
+    }
 
-        // Show number
-        elements.displayNumber.textContent = question.sequence[index];
+    // Helper for cancellable delay
+    const delay = (ms) => new Promise(resolve => {
+        const id = setTimeout(resolve, ms);
+        activeTimeouts.push(id);
+    });
 
-        const displayId = setTimeout(() => {
+    try {
+        for (let i = 0; i < question.sequence.length; i++) {
+            // Show number
+            elements.displayNumber.textContent = question.sequence[i];
+
+            // Wait display time
+            await delay(config.displayTime);
+
             // Hide number (blank)
             elements.displayNumber.textContent = '';
 
-            const gapId = setTimeout(() => {
-                index++;
-                showNext();
-            }, CONFIG.GAP_TIME);
-            activeTimeouts.push(gapId);
-        }, config.displayTime);
+            // Wait gap time
+            await delay(CONFIG.GAP_TIME);
+        }
 
-        activeTimeouts.push(displayId);
+        // Sequence done, move to answer phase
+        startAnswerPhase();
+    } catch (e) {
+        console.error("Sequence display interrupted", e);
     }
-
-    showNext();
 }
 
 function startAnswerPhase() {
