@@ -6,7 +6,7 @@ const CONFIG = {
     // Level configurations
     LEVEL_CONFIG: {
         '1-4': { targetCount: 6, displayTime: 2000, answerTime: 10000 },
-        '5-8': { targetCount: 7, displayTime: 1600, answerTime: 10000 },
+        '5-8': { targetCount: 7, displayTime: 1400, answerTime: 10000 },
         '9-10': { targetCount: 8, displayTime: 1200, answerTime: 10000 },
         '11-13': { targetCount: 9, displayTime: 1000, answerTime: 8000 },
         '14-15': { targetCount: 10, displayTime: 1000, answerTime: 8000 }
