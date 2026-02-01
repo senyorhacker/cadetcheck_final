@@ -299,6 +299,10 @@ function animateShape(shapeEl, spawnData, speed) {
     const duration = (distance / speed) * 1000;
     const reactionRect = elements.reactionArea.getBoundingClientRect();
 
+    // Get shape dimensions for precise collision detection
+    const shapeWidth = shapeEl.offsetWidth || 30; // Fallback to 30 if not rendered yet
+    const shapeHeight = shapeEl.offsetHeight || 30;
+
     function animate(currentTime) {
         const elapsed = currentTime - animStartTime;
         const progress = Math.min(elapsed / duration, 1);
@@ -317,16 +321,25 @@ function animateShape(shapeEl, spawnData, speed) {
             }
         }
 
-        // Check if shape has entered reaction area (for valid trials)
+        // Check if shape has entered reaction area (overlap logic)
+        // Overlap occurs if ANY part of the shape is inside the reaction rect (0,0 to width,height)
         if (!trial.isDistractor && !trial.hasEnteredArea) {
-            const isInsideX = currentX >= 0 && currentX <= reactionRect.width;
-            const isInsideY = currentY >= 0 && currentY <= reactionRect.height;
-            // Also relax condition slightly to ensure it counts entering
-            const centerX = currentX + 25; // approx center of shape (50px)
-            const centerY = currentY + 25;
-            const isIn = centerX > 0 && centerX < reactionRect.width && centerY > 0 && centerY < reactionRect.height;
+            const rightEdge = currentX + shapeWidth;
+            const bottomEdge = currentY + shapeHeight;
 
-            if (isIn) {
+            // Check for intersection
+            // Enter from Left: rightEdge > 0
+            // Enter from Right: currentX < width
+            // Enter from Top: bottomEdge > 0
+            // Enter from Bottom: currentY < height
+            const isOverlapping = (
+                currentX < reactionRect.width &&
+                rightEdge > 0 &&
+                currentY < reactionRect.height &&
+                bottomEdge > 0
+            );
+
+            if (isOverlapping) {
                 trial.hasEnteredArea = true;
                 trial.startTime = Date.now();
             }
@@ -429,9 +442,14 @@ function validateResponse() {
         showFeedback('⚠ DON\'T PRESS! (Distractor)', 'warning');
         score.incorrect++;
     } else {
-        // Should press correct key
+        // Valid Trial Logic
         const correctKey = getCorrectKey();
-        if (trial.pressedKey === correctKey) {
+
+        // Critical Fix: check if shape has actually entered the area
+        if (trial.startTime === 0 || !trial.hasEnteredArea) {
+            showFeedback('⚠ TOO EARLY!', 'warning');
+            score.incorrect++;
+        } else if (trial.pressedKey === correctKey) {
             const reactionTime = Date.now() - trial.startTime;
             reactionTimes.push(reactionTime);
             showFeedback(`✓ CORRECT! (+${reactionTime}ms)`, 'correct');
