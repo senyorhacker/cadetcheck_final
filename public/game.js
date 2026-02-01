@@ -235,9 +235,11 @@ function animate(timestamp) {
 
     const elapsedTime = performance.now() - trial.startTime;
 
-    if (allOffScreen && elapsedTime > 1000) {
+    if (allOffScreen && elapsedTime > (trial.expectedTime + 2000)) { // Safety buffer
         if (!trial.hasResponded) {
-            recordResponse(false, 0);
+            // Missed
+            recordResponse(false, 0); // 0 or N/A
+            showFeedback(false, 9999); // Force "Too Late"
         }
         setTimeout(() => {
             nextTrial();
@@ -302,49 +304,83 @@ function handleButtonPress(buttonColor) {
     setTimeout(() => button.classList.remove('pressed'), 300);
 
     const currentTime = performance.now();
-    const reactionTime = currentTime - trial.startTime;
-    const timingError = reactionTime - trial.expectedTime;
+    const timeSinceStart = currentTime - trial.startTime; // reactionTime in old logic
+
+    // The "True" reaction time required by user is relative to the EXPECTED EVENT (Entry)
+    // If expectedTime is 2000ms (entry), and user presses at 2100ms, Reaction is 100ms.
+    // If user presses at 1900ms, Reaction is -100ms (Too Early).
+    const reactionTime = timeSinceStart - trial.expectedTime;
 
     const isCorrectButton = buttonColor === trial.expectedButton;
 
-    showFeedback(isCorrectButton, timingError);
-    recordResponse(isCorrectButton, reactionTime);
+    // Logic: 
+    // < 0: Too Early (Incorrect)
+    // > 1000: Too Late (Incorrect)
+    // 0 - 1000: Valid (Correct if button matches)
+
+    let isTempoCorrect = false;
+    let feedbackType = '';
+
+    if (reactionTime < 0) {
+        feedbackType = 'TOO EARLY';
+        isTempoCorrect = false;
+    } else if (reactionTime > 1000) {
+        feedbackType = 'TOO LATE';
+        isTempoCorrect = false;
+    } else {
+        isTempoCorrect = true;
+    }
+
+    // Final correctness: Must be correct button AND correct timing
+    const finalResult = isCorrectButton && isTempoCorrect;
+
+    // Pass reactionTime for scoring if valid
+    const validReactionTime = (isTempoCorrect && reactionTime >= 0) ? reactionTime : null;
+
+    showFeedback(finalResult, reactionTime, feedbackType);
+    recordResponse(finalResult, validReactionTime);
 
     setTimeout(() => {
         nextTrial();
     }, 900);
 }
 
-function showFeedback(isCorrect, timingError) {
-    if (!isCorrect) {
-        return;
-    }
-
+function showFeedback(isCorrect, reactionTime, overrideText = '') {
     let feedbackText = '';
     let feedbackClass = '';
 
-    if (timingError < -200) {
-        feedbackText = 'TOO FAST';
-        feedbackClass = 'too-fast';
-    } else if (timingError > 200) {
+    if (!isCorrect) {
+        // Determine why incorrect
+        if (overrideText) {
+            feedbackText = overrideText;
+            feedbackClass = overrideText === 'TOO EARLY' ? 'too-fast' : 'too-late'; // Reusing classes
+        } else {
+            // Wrong button case primarily
+            feedbackText = 'WRONG BUTTON';
+            feedbackClass = 'too-late'; // generic error color
+        }
+    } else {
+        feedbackText = `${Math.round(reactionTime)}ms`;
+        feedbackClass = 'correct';
+    }
+
+    // Force override if "Too Late" due to timeout
+    if (reactionTime > 9000) { // arbitrary large number signal from timeout
         feedbackText = 'TOO LATE';
         feedbackClass = 'too-late';
-    } else {
-        const sign = timingError > 0 ? '+' : '';
-        feedbackText = `${sign}${Math.round(timingError)}ms`;
-        feedbackClass = 'correct';
     }
 
     feedbackOverlay.textContent = feedbackText;
     feedbackOverlay.className = `feedback-overlay ${feedbackClass}`;
 
+    feedbackOverlay.classList.remove('hidden');
     setTimeout(() => {
         feedbackOverlay.classList.add('hidden');
     }, 800);
 }
 
 function recordResponse(isCorrect, reactionTime) {
-    if (isCorrect) {
+    if (isCorrect && reactionTime !== null) {
         score.correct++;
         score.reactionTimes.push(reactionTime);
     } else {
@@ -383,8 +419,11 @@ function endLevel() {
 function showScoreModal() {
     const totalTrials = score.correct + score.incorrect;
     const successRate = totalTrials > 0 ? (score.correct / totalTrials) : 0;
-    const avgReactionTime = score.reactionTimes.length > 0
-        ? score.reactionTimes.reduce((a, b) => a + b, 0) / score.reactionTimes.length
+
+    // Filter valid reaction times just in case, though recordResponse handles it
+    const validTimes = score.reactionTimes.filter(t => t >= 0 && t <= 1000);
+    const avgReactionTime = validTimes.length > 0
+        ? validTimes.reduce((a, b) => a + b, 0) / validTimes.length
         : 0;
 
     document.getElementById('scoreLevel').textContent = currentLevel;
