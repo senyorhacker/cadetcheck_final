@@ -162,8 +162,14 @@ function generateTrial() {
             trial.expectedButton = 'black';
         } else {
             const matchingBall = trial.balls.find(b => b.color === trial.lineColor);
-            const exitY = matchingBall.vy > 0 ? box.y + box.height : box.y;
-            trial.expectedTime = Math.abs((exitY - matchingBall.y) / matchingBall.vy) * 1000;
+            // TARGET: Leading edge exits the box
+            // If moving down (vy > 0): Leading edge is bottom (y + radius). Exits when y + radius = box.y + box.height
+            // If moving up (vy < 0): Leading edge is top (y - radius). Exits when y - radius = box.y
+            const targetY = matchingBall.vy > 0
+                ? box.y + box.height - CONFIG.BALL_RADIUS
+                : box.y + CONFIG.BALL_RADIUS;
+
+            trial.expectedTime = Math.abs((targetY - matchingBall.y) / matchingBall.vy) * 1000;
             trial.expectedButton = trial.lineColor;
         }
 
