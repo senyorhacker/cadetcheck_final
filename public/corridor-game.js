@@ -6,10 +6,10 @@ const CONFIG = {
 
     // Level configurations
     LEVEL_CONFIG: {
-        '1-5': { closedCorridors: 2, totalCities: 6, openCities: 3, answerTime: 10000 },
-        '6-9': { closedCorridors: 3, totalCities: 8, openCities: 4, answerTime: 12000 },
-        '10-13': { closedCorridors: 4, totalCities: 10, openCities: 5, answerTime: 15000 },
-        '14-15': { closedCorridors: 5, totalCities: 12, openCities: 6, answerTime: 15000 }
+        '1-5': { closedCorridors: 2, totalCities: 5, openCities: 2, answerTime: 15000 },
+        '6-9': { closedCorridors: 3, totalCities: 7, openCities: 3, answerTime: 17000 },
+        '10-13': { closedCorridors: 4, totalCities: 9, openCities: 4, answerTime: 20000 },
+        '14-15': { closedCorridors: 5, totalCities: 11, openCities: 5, answerTime: 20000 }
     },
 
     DISPLAY_TIME: 4000,  // Corridor display time
