@@ -207,6 +207,36 @@ function playAudioSequence() {
     // Don't show text - purely audio test
     elements.audioText.textContent = 'Listening...';
 
+    // Helper to get best English voice
+    function getBestVoice() {
+        const voices = speechSynthesis.getVoices();
+        // Priority list for clear English voices
+        const priorityPatterns = [
+            /Google US English/i,
+            /Google UK English Female/i,
+            /Microsoft Zira/i, // Windows High Quality
+            /Samantha/i,       // Mac
+            /Daniel/i,         // Mac
+            /en-US/i,          // Generic US English
+            /en-GB/i           // Generic UK English
+        ];
+
+        for (let pattern of priorityPatterns) {
+            const found = voices.find(v => pattern.test(v.name));
+            if (found) return found;
+        }
+
+        // Fallback to any English voice
+        return voices.find(v => v.lang.startsWith('en')) || null;
+    }
+
+    // Ensure voices are loaded (Chrome quirk)
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = () => {
+            // Just to trigger loading
+        };
+    }
+
     let index = 0;
 
     function speakNext() {
@@ -219,39 +249,50 @@ function playAudioSequence() {
         }
 
         const assignment = question.assignments[index];
-        const text = `To ${assignment.city} on Corridor ${assignment.corridor}`;
+        // "To [City] on Corridor [Number]"
+        // Added pause commas for better pacing
+        const text = `To ${assignment.city}, on Corridor ${assignment.corridor}`;
 
-        // DO NOT display text - audio only!
+        const utterance = new SpeechSynthesisUtterance(text);
 
-        // Speak using ResponsiveVoice
-        if (typeof responsiveVoice !== 'undefined') {
-            responsiveVoice.speak(text, "US English Male", {
-                rate: 0.9,
-                onend: () => {
-                    setTimeout(() => {
-                        index++;
-                        speakNext();
-                    }, CONFIG.SPEECH_GAP);
-                }
-            });
-        } else {
-            // Fallback: Web Speech API
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.9;
-
-            utterance.onend = () => {
-                setTimeout(() => {
-                    index++;
-                    speakNext();
-                }, CONFIG.SPEECH_GAP);
-            };
-
-            speechSynthesis.speak(utterance);
+        // Voice Selection
+        const bestVoice = getBestVoice();
+        if (bestVoice) {
+            utterance.voice = bestVoice;
+            console.log("Using voice:", bestVoice.name);
         }
+
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; // Slightly slower for clarity
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+
+        utterance.onend = () => {
+            setTimeout(() => {
+                index++;
+                speakNext();
+            }, CONFIG.SPEECH_GAP);
+        };
+
+        utterance.onerror = (e) => {
+            console.error("Speech error", e);
+            // Skip to next even on error to prevent hang
+            setTimeout(() => {
+                index++;
+                speakNext();
+            }, CONFIG.SPEECH_GAP);
+        }
+
+        window.speechSynthesis.cancel(); // Safety cancel
+        window.speechSynthesis.speak(utterance);
     }
 
-    speakNext();
+    // Wait a brief moment for voices to be ready if first load
+    if (speechSynthesis.getVoices().length === 0) {
+        setTimeout(speakNext, 100);
+    } else {
+        speakNext();
+    }
 }
 
 function generateCityCheckboxes() {
