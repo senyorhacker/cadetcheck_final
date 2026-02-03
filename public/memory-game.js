@@ -146,11 +146,16 @@ const delay = (ms) => new Promise(resolve => {
 function startQuestion() {
     // Handling END of Exam or Level
     let maxQuestions = CONFIG.QUESTIONS_PER_LEVEL;
-
+    
     if (currentLevel === 'exam') {
         maxQuestions = 21; // 7 stages * 3 questions
+        // Ensure game info is hidden during exam
+        document.querySelector('.game-info').style.display = 'none';
+    } else {
+        document.querySelector('.game-info').style.display = 'flex';
     }
-
+    
+    // Check if we reached the limit
     if (currentQuestion >= maxQuestions) {
         endLevel();
         return;
