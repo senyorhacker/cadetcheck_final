@@ -146,7 +146,7 @@ const delay = (ms) => new Promise(resolve => {
 function startQuestion() {
     // Handling END of Exam or Level
     let maxQuestions = CONFIG.QUESTIONS_PER_LEVEL;
-    
+
     if (currentLevel === 'exam') {
         maxQuestions = 21; // 7 stages * 3 questions
         // Ensure game info is hidden during exam
@@ -154,7 +154,7 @@ function startQuestion() {
     } else {
         document.querySelector('.game-info').style.display = 'flex';
     }
-    
+
     // Check if we reached the limit
     if (currentQuestion >= maxQuestions) {
         endLevel();
@@ -213,26 +213,80 @@ function generateSequence() {
     const maxAttempts = 1000;
     let success = false;
 
+    // We need to generate a sequence such that exactly 'targetCount' numbers
+    // satisfy the condition (num > prev). The first number is always kept.
+    // So we need: [First] + (targetCount - 1) * [Greater] + (Random Amount) * [Smaller/Equal]
+
     while (attempts < maxAttempts) {
         attempts++;
         sequence = [];
         correctAnswer = [];
 
-        let prev = Math.floor(Math.random() * 10);
-        sequence.push(prev);
-        correctAnswer.push(prev);
+        // 1. Initial Number
+        let currentNum = Math.floor(Math.random() * 10);
+        sequence.push(currentNum);
+        correctAnswer.push(currentNum);
 
-        for (let i = 1; i < totalNumbers; i++) {
-            let num = Math.floor(Math.random() * 10);
-            sequence.push(num);
-            if (num > prev) {
-                correctAnswer.push(num);
+        // 2. We need (targetCount - 1) more "Increases"
+        let increasesNeeded = targetCount - 1;
+        let increasesAdded = 0;
+
+        // We will build the sequence step-by-step
+        // Randomly decide if next number should be an Increase (valid) or Decrease (distractor)
+        // Ensure we eventually hit exactly the needed count.
+
+        let safetyLoop = 0;
+        while (increasesAdded < increasesNeeded && safetyLoop < 100) {
+            safetyLoop++;
+
+            // Bias towards increase to ensure we don't loop forever, but keep randomness
+            // If we have many increases left, higher chance to add one.
+            const wantIncrease = Math.random() < 0.6;
+
+            if (wantIncrease) {
+                // Generate a number > currentNum
+                // If currentNum is 9, we can't go higher (0-9 range per original logic unless we wrap or allow equal? 
+                // Original logic: "Rakam öncekinden büyükse". So 9 cannot have a greater single digit successor.
+                // If current is 9, we MUST drop down first (distractor).
+                if (currentNum < 9) {
+                    let next = Math.floor(Math.random() * (9 - currentNum)) + currentNum + 1;
+                    sequence.push(next);
+                    correctAnswer.push(next);
+                    currentNum = next;
+                    increasesAdded++;
+                } else {
+                    // Must decrease
+                    let next = Math.floor(Math.random() * 10); // 0-9
+                    if (next <= currentNum) {
+                        sequence.push(next);
+                        currentNum = next;
+                    }
+                }
+            } else {
+                // Generate a number <= currentNum (Distractor)
+                // If current is 0, we can only be equal (0) for distractor or go up. 
+                // Let's assume <= based on "Büyüşse Tut". So Equal is also ignored.
+                let next = Math.floor(Math.random() * (currentNum + 1)); // 0 to currentNum
+                sequence.push(next);
+                // Don't add to correct answer
+                currentNum = next;
             }
-            prev = num;
         }
 
-        if (correctAnswer.length >= targetCount && correctAnswer.length <= targetCount + 2) {
-            correctAnswer = correctAnswer.slice(0, targetCount);
+        // 3. Add some trailing distractors (optional, to make total length variable)
+        // Original code had `totalNumbers` logic. Let's add 2-5 distractors mixed in or at end?
+        // Actually, the user just said "haneli sorulardaki demek istediğim doğru cevapları bu hanelerde olacak".
+        // The total sequence length matters less, but shouldn't be too short.
+        // Let's add a few more distractors if the sequence is short, or just randomly.
+
+        const extraDistractors = Math.floor(Math.random() * 3); // 0-2 extras
+        for (let k = 0; k < extraDistractors; k++) {
+            let next = Math.floor(Math.random() * (currentNum + 1));
+            sequence.push(next);
+            currentNum = next;
+        }
+
+        if (correctAnswer.length === targetCount) {
             question.sequence = sequence;
             question.correctAnswer = correctAnswer;
             success = true;
