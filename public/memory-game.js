@@ -12,23 +12,36 @@ const CONFIG = {
         '14-15': { targetCount: 10, displayTime: 1000, answerTime: 8000 }
     },
 
+    // Exam Mode Configuration
+    EXAM_CONFIG: [
+        { count: 4, time: 1400, qty: 3 },
+        { count: 5, time: 1300, qty: 3 },
+        { count: 6, time: 1200, qty: 3 },
+        { count: 7, time: 1200, qty: 3 },
+        { count: 8, time: 1200, qty: 3 },
+        { count: 9, time: 1100, qty: 3 },
+        { count: 10, time: 1100, qty: 3 }
+    ],
+
     GAP_TIME: 500 // Time between numbers
 };
 
 // Game State
-let currentLevel = 1;
+let currentLevel = 1; // Number or 'exam'
 let currentQuestion = 0;
 let score = {
     correct: 0,
     incorrect: 0
 };
+let examResults = []; // Stores { qIndex, user, correct, isCorrect } for exam mode
 
 // Current question data
 let question = {
     sequence: [],
     correctAnswer: [],
     userAnswer: [],
-    isAnswering: false
+    isAnswering: false,
+    examConfigIdx: 0 // Track which exam stage we are in
 };
 
 // DOM Elements
@@ -69,7 +82,7 @@ function attachEventListeners() {
     });
 
     if (elements.backspaceBtn) elements.backspaceBtn.addEventListener('click', removeLastNumber);
-    if (elements.submitBtn) elements.submitBtn.addEventListener('click', submitAnswer);
+    if (elements.submitBtn) elements.submitBtn.addEventListener('click', () => submitAnswer());
     if (elements.nextLevelButton) elements.nextLevelButton.addEventListener('click', nextLevel);
     if (elements.retryButton) elements.retryButton.addEventListener('click', retryLevel);
     if (elements.backToLevelsButton) elements.backToLevelsButton.addEventListener('click', () => {
@@ -88,7 +101,10 @@ function init() {
     const urlParams = new URLSearchParams(window.location.search);
     const levelParam = urlParams.get('level');
 
-    if (levelParam) {
+    if (levelParam === 'exam') {
+        currentLevel = 'exam';
+        document.body.classList.add('exam-mode');
+    } else if (levelParam) {
         const parsedLevel = parseInt(levelParam);
         if (parsedLevel >= 1 && parsedLevel <= CONFIG.TOTAL_LEVELS) {
             currentLevel = parsedLevel;
@@ -101,6 +117,11 @@ function init() {
 }
 
 function getLevelConfig(level) {
+    if (level === 'exam') {
+        // Construct a flat list of questions based on EXAM_CONFIG
+        // This is dynamic, so we handle it in startQuestion
+        return null;
+    }
     if (level <= 4) return CONFIG.LEVEL_CONFIG['1-4'];
     if (level <= 8) return CONFIG.LEVEL_CONFIG['5-8'];
     if (level <= 10) return CONFIG.LEVEL_CONFIG['9-10'];
@@ -123,6 +144,18 @@ const delay = (ms) => new Promise(resolve => {
 });
 
 function startQuestion() {
+    // Handling END of Exam or Level
+    let maxQuestions = CONFIG.QUESTIONS_PER_LEVEL;
+
+    if (currentLevel === 'exam') {
+        maxQuestions = 21; // 7 stages * 3 questions
+    }
+
+    if (currentQuestion >= maxQuestions) {
+        endLevel();
+        return;
+    }
+
     console.log("Starting Question " + (currentQuestion + 1));
     clearAllTimeouts(); // Stop any running sequences
     currentQuestion++;
@@ -132,7 +165,8 @@ function startQuestion() {
         sequence: [],
         correctAnswer: [],
         userAnswer: [],
-        isAnswering: false
+        isAnswering: false,
+        displayTime: 2000 // Default fallback
     };
 
     generateSequence();
@@ -145,8 +179,26 @@ function startQuestion() {
 }
 
 function generateSequence() {
-    const config = getLevelConfig(currentLevel);
-    const targetCount = config.targetCount;
+    let targetCount = 6;
+    let displayTime = 2000;
+
+    if (currentLevel === 'exam') {
+        // Determine stage based on currentQuestion (1-indexed)
+        // Groups of 3: 1-3 (idx 0), 4-6 (idx 1)...
+        // (currentQuestion - 1) / 3
+        const stageIdx = Math.floor((currentQuestion - 1) / 3);
+        const stageConfig = CONFIG.EXAM_CONFIG[stageIdx] || CONFIG.EXAM_CONFIG[CONFIG.EXAM_CONFIG.length - 1];
+
+        targetCount = stageConfig.count;
+        displayTime = stageConfig.time;
+        question.displayTime = displayTime; // Store for valid usage
+    } else {
+        const config = getLevelConfig(currentLevel);
+        targetCount = config.targetCount;
+        displayTime = config.displayTime;
+        question.displayTime = displayTime;
+    }
+
     const extraNumbers = 4 + Math.floor(Math.random() * 5);
     const totalNumbers = targetCount + extraNumbers;
 
@@ -205,8 +257,6 @@ function generateSequence() {
 }
 
 async function displaySequence() {
-    const config = getLevelConfig(currentLevel);
-
     if (!question.sequence || question.sequence.length === 0) {
         console.error("No sequence generated!");
         return;
@@ -225,12 +275,11 @@ async function displaySequence() {
         }
 
         // Wait display time
-        await delay(config.displayTime);
+        await delay(question.displayTime);
 
         // Hide number (blank)
         if (elements.displayNumber) {
             elements.displayNumber.textContent = '';
-            // elements.displayNumber.style.opacity = '0'; // Optional visual effect
         }
 
         // Wait gap time
@@ -246,14 +295,22 @@ function startAnswerPhase() {
     showPhase('answer');
     updateUserAnswerDisplay();
 
-    const config = getLevelConfig(currentLevel);
+    // Determine answer time per level
+    let answerTime = 10000;
+    if (currentLevel !== 'exam') {
+        const config = getLevelConfig(currentLevel);
+        answerTime = config.answerTime;
+    } else {
+        // Exam mode answer time
+        answerTime = 8000;
+    }
 
     // Start answer timer
     const id = setTimeout(() => {
         if (question.isAnswering) {
-            submitAnswer();
+            submitAnswer(true); // Auto-submit on timeout
         }
-    }, config.answerTime);
+    }, answerTime);
     activeTimeouts.push(id);
 }
 
@@ -273,8 +330,6 @@ function showPhase(phase) {
 
 function addNumber(num) {
     if (!question.isAnswering) return;
-
-    // input limit restriction removed as per user request
     question.userAnswer.push(num);
     updateUserAnswerDisplay();
 }
@@ -282,7 +337,6 @@ function addNumber(num) {
 function removeLastNumber() {
     if (!question.isAnswering) return;
     if (question.userAnswer.length === 0) return;
-
     question.userAnswer.pop();
     updateUserAnswerDisplay();
 }
@@ -299,8 +353,10 @@ function updateUserAnswerDisplay() {
     }
 }
 
-function submitAnswer() {
-    if (!question.isAnswering) return;
+function submitAnswer(auto = false) {
+    // If auto is false, user clicked submit. Check if responding is active.
+    if (!auto && !question.isAnswering) return;
+
     question.isAnswering = false;
 
     const isCorrect = validateAnswer();
@@ -308,7 +364,25 @@ function submitAnswer() {
     else score.incorrect++;
 
     updateScoreDisplay();
-    showComparison(isCorrect);
+
+    if (currentLevel === 'exam') {
+        // Store Result
+        examResults.push({
+            qNum: currentQuestion,
+            correct: [...question.correctAnswer],
+            user: [...question.userAnswer],
+            isCorrect: isCorrect
+        });
+
+        // Skip feedback phase, go instantly to next question
+        setTimeout(() => {
+            startQuestion();
+        }, 500);
+
+    } else {
+        // Normal Mode: Show Feedback
+        showComparison(isCorrect);
+    }
 }
 
 function validateAnswer() {
@@ -360,11 +434,7 @@ function showComparison(isCorrect) {
 
     const comparisonTime = currentLevel <= 10 ? 10000 : 8000;
     const compId = setTimeout(() => {
-        if (currentQuestion >= CONFIG.QUESTIONS_PER_LEVEL) {
-            endLevel();
-        } else {
-            startQuestion();
-        }
+        startQuestion();
     }, comparisonTime);
     activeTimeouts.push(compId);
 }
@@ -374,14 +444,14 @@ function endLevel() {
 }
 
 function showScoreModal() {
+    if (currentLevel === 'exam') {
+        showExamResultsModal();
+        return;
+    }
+
     const totalQuestions = score.correct + score.incorrect;
     const successRate = totalQuestions > 0 ? (score.correct / totalQuestions) : 0;
     const scoreVal = Math.round(successRate * 100);
-
-    if (typeof ClientAPI !== 'undefined') {
-        const gameName = "Verbal Memory";
-        ClientAPI.saveGameResult(gameName, `${score.correct}/${totalQuestions} (${scoreVal}%)`, currentLevel);
-    }
 
     if (elements.scoreModal) {
         document.getElementById('scoreLevel').textContent = currentLevel;
@@ -401,6 +471,62 @@ function showScoreModal() {
     }
 }
 
+function showExamResultsModal() {
+    // Modify modal content totally for exam
+    const modalContent = elements.scoreModal.querySelector('.modal-content');
+    const totalQuestions = 21;
+    const successRate = Math.round((score.correct / totalQuestions) * 100);
+
+    let html = `
+        <h2>Exam Mode Completed!</h2>
+        <div class="score-grid">
+            <div class="score-item">
+                <div class="score-label">Correct</div>
+                <div class="score-value correct">${score.correct}</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Score</div>
+                <div class="score-value">${successRate}%</div>
+            </div>
+        </div>
+        <div class="exam-table-container" style="max-height: 300px; overflow-y: auto; margin: 1rem 0; text-align: left;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <th style="padding: 5px;">#</th>
+                        <th style="padding: 5px;">Correct</th>
+                        <th style="padding: 5px;">Your Answer</th>
+                        <th style="padding: 5px;">Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    examResults.forEach(res => {
+        html += `
+            <tr style="background: ${res.isCorrect ? 'rgba(46, 204, 113, 0.1)' : 'rgba(231, 76, 60, 0.1)'}">
+                <td style="padding: 5px;">${res.qNum}</td>
+                <td style="padding: 5px; font-family: monospace;">${res.correct.join('')}</td>
+                <td style="padding: 5px; font-family: monospace;">${res.user.length ? res.user.join('') : '-'}</td>
+                <td style="padding: 5px;">${res.isCorrect ? '✓' : '✗'}</td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+        <div class="score-buttons">
+            <button class="action-button" onclick="window.location.reload()">Retry Exam</button>
+            <button class="action-button secondary" onclick="window.location.href='level-select-memory.html?game=verbal-memory'">Exit</button>
+        </div>
+    `;
+
+    modalContent.innerHTML = html;
+    elements.scoreModal.classList.remove('hidden');
+}
+
 function nextLevel() {
     if (elements.scoreModal) elements.scoreModal.classList.add('hidden');
     if (currentLevel < CONFIG.TOTAL_LEVELS) {
@@ -414,6 +540,13 @@ function nextLevel() {
 
 function retryLevel() {
     if (elements.scoreModal) elements.scoreModal.classList.add('hidden');
+    // If in exam mode, full reload is safer (handled by button in showExamResultsModal)
+    // but for consistency:
+    if (currentLevel === 'exam') {
+        window.location.reload();
+        return;
+    }
+
     currentQuestion = 0;
     resetScore();
     startQuestion();
@@ -421,11 +554,14 @@ function retryLevel() {
 
 function resetScore() {
     score = { correct: 0, incorrect: 0 };
+    examResults = [];
     updateScoreDisplay();
 }
 
 function updateLevelDisplay() {
-    if (elements.currentLevel) elements.currentLevel.textContent = currentLevel;
+    if (elements.currentLevel) {
+        elements.currentLevel.textContent = currentLevel === 'exam' ? 'EXAM' : currentLevel;
+    }
 }
 
 function updateQuestionDisplay() {
