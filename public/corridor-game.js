@@ -6,15 +6,15 @@ const CONFIG = {
 
     // Level configurations
     LEVEL_CONFIG: {
-        '1-5': { closedCorridors: 2, totalCities: 5, openCities: 2, answerTime: 15000 },
-        '6-9': { closedCorridors: 3, totalCities: 7, openCities: 3, answerTime: 17000 },
-        '10-13': { closedCorridors: 4, totalCities: 9, openCities: 4, answerTime: 20000 },
-        '14-15': { closedCorridors: 5, totalCities: 11, openCities: 5, answerTime: 20000 }
+        '1-5': { closedCorridors: 2, totalCities: 5, openCities: 2, answerTime: 20000 },
+        '6-9': { closedCorridors: 3, totalCities: 7, openCities: 3, answerTime: 22000 },
+        '10-13': { closedCorridors: 4, totalCities: 9, openCities: 4, answerTime: 25000 },
+        '14-15': { closedCorridors: 5, totalCities: 11, openCities: 5, answerTime: 25000 }
     },
 
-    DISPLAY_TIME: 9000,  // Corridor display time (Increased by 5s)
+    DISPLAY_TIME: 9000,  // Corridor display time
     SPEECH_GAP: 2000,    // Gap between city announcements
-    COMPARISON_TIME: 8000 // Before next question (Increased by 5s)
+    COMPARISON_TIME: 8000 // Before next question
 };
 
 // City List (65 cities, alphabetically arranged in 5 columns)
@@ -41,6 +41,7 @@ let score = {
     correct: 0,
     incorrect: 0
 };
+let activeTimeouts = []; // Track timeouts to clear them
 
 // Current question data
 let question = {
@@ -73,7 +74,7 @@ const elements = {
 };
 
 // Event Listeners
-elements.submitBtn.addEventListener('click', submitAnswer);
+elements.submitBtn.addEventListener('click', () => submitAnswer(false)); // Manual submit
 elements.nextLevelButton.addEventListener('click', nextLevel);
 elements.retryButton.addEventListener('click', retryLevel);
 elements.backToLevelsButton.addEventListener('click', () => {
@@ -96,8 +97,20 @@ function init() {
 
     resetScore();
     updateLevelDisplay();
-    generateCityCheckboxes();
     startQuestion();
+}
+
+// Timeout Helper
+function setTimeoutTracked(fn, delay) {
+    const id = setTimeout(fn, delay);
+    activeTimeouts.push(id);
+    return id;
+}
+
+function clearAllTimeouts() {
+    activeTimeouts.forEach(id => clearTimeout(id));
+    activeTimeouts = [];
+    window.speechSynthesis.cancel(); // Stop any pending speech
 }
 
 function getLevelConfig(level) {
@@ -108,6 +121,13 @@ function getLevelConfig(level) {
 }
 
 function startQuestion() {
+    clearAllTimeouts(); // Ensure fresh start for the question
+
+    if (currentQuestion >= CONFIG.QUESTIONS_PER_LEVEL) {
+        endLevel();
+        return;
+    }
+
     currentQuestion++;
     updateQuestionDisplay();
 
@@ -123,7 +143,7 @@ function startQuestion() {
     displayCorridors();
 
     // After display time, move to audio phase
-    setTimeout(() => {
+    setTimeoutTracked(() => {
         generateAssignments();
         playAudioSequence();
     }, CONFIG.DISPLAY_TIME);
@@ -173,13 +193,15 @@ function generateAssignments() {
     const config = getLevelConfig(currentLevel);
     const totalCities = config.totalCities;
 
-    // Shuffle and select cities
+    // Shuffle and select cities unique for this question
     const shuffledCities = [...CITIES].sort(() => Math.random() - 0.5);
     const selectedCities = shuffledCities.slice(0, totalCities);
 
     let assignments = [];
     let correctAnswer = [];
 
+    // Ensure we don't pick the same corridor for every city randomly if not intended,
+    // but random is fine.
     for (let city of selectedCities) {
         // Random corridor (0-9)
         const corridorIdx = Math.floor(Math.random() * CONFIG.TOTAL_CORRIDORS);
@@ -206,6 +228,7 @@ function playAudioSequence() {
 
     // Don't show text - purely audio test
     elements.audioText.textContent = 'Listening...';
+    window.speechSynthesis.cancel(); // Clear any previous speech
 
     // Helper to get best English voice
     function getBestVoice() {
@@ -232,25 +255,27 @@ function playAudioSequence() {
 
     // Ensure voices are loaded (Chrome quirk)
     if (speechSynthesis.onvoiceschanged !== undefined) {
-        speechSynthesis.onvoiceschanged = () => {
-            // Just to trigger loading
-        };
+        speechSynthesis.onvoiceschanged = () => { };
     }
 
     let index = 0;
 
+    // Create a safety flag to stop speaking if phase changes
+    let isSpeaking = true;
+
     function speakNext() {
+        if (!isSpeaking) return;
+
         if (index >= question.assignments.length) {
             // Audio done, move to answer phase
-            setTimeout(() => {
+            setTimeoutTracked(() => {
                 startAnswerPhase();
             }, 500);
             return;
         }
 
         const assignment = question.assignments[index];
-        // "To [City] on Corridor [Number]"
-        // Added pause commas for better pacing
+        // "To [City], on Corridor [Number]"
         const text = `To ${assignment.city}, on Corridor ${assignment.corridor}`;
 
         const utterance = new SpeechSynthesisUtterance(text);
@@ -259,7 +284,6 @@ function playAudioSequence() {
         const bestVoice = getBestVoice();
         if (bestVoice) {
             utterance.voice = bestVoice;
-            console.log("Using voice:", bestVoice.name);
         }
 
         utterance.lang = 'en-US';
@@ -268,28 +292,31 @@ function playAudioSequence() {
         utterance.volume = 1.1; // Slightly louder
 
         utterance.onend = () => {
-            setTimeout(() => {
-                index++;
-                speakNext();
-            }, CONFIG.SPEECH_GAP);
+            if (isSpeaking) {
+                setTimeoutTracked(() => {
+                    index++;
+                    speakNext();
+                }, CONFIG.SPEECH_GAP);
+            }
         };
 
         utterance.onerror = (e) => {
             console.error("Speech error", e);
-            // Skip to next even on error to prevent hang
-            setTimeout(() => {
-                index++;
-                speakNext();
-            }, CONFIG.SPEECH_GAP);
+            if (isSpeaking) {
+                setTimeoutTracked(() => {
+                    index++;
+                    speakNext();
+                }, CONFIG.SPEECH_GAP);
+            }
         }
 
-        window.speechSynthesis.cancel(); // Safety cancel
+        window.speechSynthesis.cancel(); // Ensure clear before speak
         window.speechSynthesis.speak(utterance);
     }
 
     // Wait a brief moment for voices to be ready if first load
     if (speechSynthesis.getVoices().length === 0) {
-        setTimeout(speakNext, 100);
+        setTimeoutTracked(speakNext, 100);
     } else {
         speakNext();
     }
@@ -325,10 +352,12 @@ function startAnswerPhase() {
         cb.checked = false;
     });
 
+    generateCityCheckboxes(); // Refresh grid just in case
+
     // Start answer timer
     const config = getLevelConfig(currentLevel);
-    setTimeout(() => {
-        submitAnswer();
+    setTimeoutTracked(() => {
+        submitAnswer(true); // Auto submit
     }, config.answerTime);
 }
 
@@ -349,7 +378,10 @@ function showPhase(phase) {
     }
 }
 
-function submitAnswer() {
+function submitAnswer(auto = false) {
+    // Prevent double submission if manually clicked right before timeout
+    if (elements.answerPhase.classList.contains('hidden')) return;
+
     // Get selected cities
     const selectedCheckboxes = document.querySelectorAll('.city-checkbox input:checked');
     question.userAnswer = Array.from(selectedCheckboxes).map(cb => cb.value).sort();
@@ -387,6 +419,9 @@ function validateAnswer() {
 function showComparison(isCorrect) {
     showPhase('comparison');
 
+    // Stop loops
+    clearAllTimeouts();
+
     // Display correct answer
     elements.correctCitiesList.innerHTML = '';
     question.correctAnswer.forEach(city => {
@@ -416,17 +451,14 @@ function showComparison(isCorrect) {
         <div class="result-text">${isCorrect ? 'Doğru' : 'Yanlış'}</div>
     `;
 
-    // Auto-proceed
-    setTimeout(() => {
-        if (currentQuestion >= CONFIG.QUESTIONS_PER_LEVEL) {
-            endLevel();
-        } else {
-            startQuestion();
-        }
+    // Proceed to next question after delay
+    setTimeoutTracked(() => {
+        startQuestion();
     }, CONFIG.COMPARISON_TIME);
 }
 
 function endLevel() {
+    clearAllTimeouts();
     showScoreModal();
 }
 
