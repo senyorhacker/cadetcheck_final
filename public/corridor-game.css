@@ -69,6 +69,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    transform: scale(0.9);
 }
 
 .phase-container.hidden {

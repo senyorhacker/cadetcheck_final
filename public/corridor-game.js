@@ -12,9 +12,9 @@ const CONFIG = {
         '14-15': { closedCorridors: 5, totalCities: 11, openCities: 5, answerTime: 20000 }
     },
 
-    DISPLAY_TIME: 4000,  // Corridor display time
+    DISPLAY_TIME: 9000,  // Corridor display time (Increased by 5s)
     SPEECH_GAP: 2000,    // Gap between city announcements
-    COMPARISON_TIME: 3000 // Before next question
+    COMPARISON_TIME: 8000 // Before next question (Increased by 5s)
 };
 
 // City List (65 cities, alphabetically arranged in 5 columns)
@@ -263,9 +263,9 @@ function playAudioSequence() {
         }
 
         utterance.lang = 'en-US';
-        utterance.rate = 0.85; // Slightly slower for clarity
+        utterance.rate = 0.75; // Slower for clarity
         utterance.pitch = 1.0;
-        utterance.volume = 1.0;
+        utterance.volume = 1.1; // Slightly louder
 
         utterance.onend = () => {
             setTimeout(() => {
